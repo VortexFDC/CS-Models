@@ -4,12 +4,12 @@
 #
 #	Crea grib files para periodos de 2 dias.
 #		Necesita: experiment data-inici
-#		Model: HadGEM2-ES
+#		Model: inmcm4
 #
 #############
 
 ens=r1i1p1
-mdl=HadGEM2-ES
+mdl=inmcm4
 
 s=$1
 idate=$2
@@ -82,10 +82,10 @@ fi
 echo 'select ... '$v $freq
 if [ $v == tos ];then
 	cdo -s -r griddes $scratch/crop/psl.nc > $scratch/tab/reg.grid
-	cdo -s -r -remapdis,$scratch/tab/reg.grid -seldate,$d1,$d2  -inttime,$d1,00:00,6hour -seldate,$dx,$dy $f $scratch/crop/$v.nc
+	cdo -s -r -remapdis,$scratch/tab/reg.grid -seldate,$d1,$d2 -inttime,$d1,00:00,6hour -seldate,$dx,$dy $f $scratch/crop/$v.nc
 else
 	if [[ $freq == *"6hr"* ]];then
-		cdo -s -r  -seldate,$d1,$d2 $f $scratch/crop/$v.nc
+		cdo -s -r -seldate,$d1,$d2 $f $scratch/crop/$v.nc
 	elif [[ $freq == *"mon"* ]];then
 		for m in $mx; do
 			if [ $m -gt 12 ];then
@@ -102,9 +102,9 @@ else
 		done
 		rm -f $scratch/crop/$v.foo.nc
 		cdo -s -r cat $scratch/crop/$v.mon*.nc $scratch/crop/$v.foo.nc
-		cdo -s -r  -seldate,$d1,$d2 -inttime,$d1,00:00,6hour $scratch/crop/$v.foo.nc $scratch/crop/$v.nc
+		cdo -s -r -seldate,$d1,$d2 -inttime,$d1,00:00,6hour $scratch/crop/$v.foo.nc $scratch/crop/$v.nc
 	else
-		cdo -s -r  -seldate,$d1,$d2 -inttime,$d1,00:00,6hour -seldate,$dx,$dy $f $scratch/crop/$v.nc
+		cdo -s -r -seldate,$d1,$d2 -inttime,$d1,00:00,6hour -seldate,$dx,$dy $f $scratch/crop/$v.nc
 	fi
 fi
 done
@@ -126,9 +126,7 @@ if [ $v == ta ] || [ $v == ua ] || [ $v == va ];then
 		fi
 
 		if [[ $freq == *"6hrP"* ]];then
-			cdo -s -r  -seldate,$d1,$d2 $f $scratch/crop/$v.nc
-		elif [[ $freq == *"6hrL"* ]];then
-			cdo -s -r  -invertlev -seldate,$d1,$d2 $f $scratch/crop/$v.nc
+			cdo -s -r -seldate,$d1,$d2 $f $scratch/crop/$v.nc
 		elif [[ $freq == *"mon"* ]];then
 			for m in $mx; do
 				if [ $m -gt 12 ];then
@@ -145,9 +143,9 @@ if [ $v == ta ] || [ $v == ua ] || [ $v == va ];then
 			done
 			rm -f $scratch/crop/$v.day.foo.nc
 			cdo -s -r cat $scratch/crop/$v.mon*.nc $scratch/crop/$v.foo.nc
-			cdo -s -r  -seldate,$d1,$d2 -inttime,$d1,00:00,6hour $scratch/crop/$v.foo.nc $scratch/crop/$v.day.nc
+			cdo -s -r -seldate,$d1,$d2 -inttime,$d1,00:00,6hour $scratch/crop/$v.foo.nc $scratch/crop/$v.day.nc
 		else
-			cdo -s -r  -seldate,$d1,$d2 -inttime,$d1,00:00,6hour -seldate,$dx,$dy $f $scratch/crop/$v.day.nc
+			cdo -s -r -seldate,$d1,$d2 -inttime,$d1,00:00,6hour -seldate,$dx,$dy $f $scratch/crop/$v.day.nc
 		fi
 	done
 else
@@ -179,9 +177,9 @@ else
 		done
 		rm -f $scratch/crop/$v.foo.nc
 		cdo -s -r cat $scratch/crop/$v.mon*.nc $scratch/crop/$v.foo.nc
-		cdo -s -r  -seldate,$d1,$d2 -inttime,$d1,00:00,6hour $scratch/crop/$v.foo.nc $scratch/crop/$v.day.nc
+		cdo -s -r -seldate,$d1,$d2 -inttime,$d1,00:00,6hour $scratch/crop/$v.foo.nc $scratch/crop/$v.day.nc
 	else
-		cdo -s -r  -seldate,$d1,$d2  -inttime,$d1,00:00,6hour -seldate,$dx,$dy $f $scratch/crop/$v.day.nc
+		cdo -s -r -seldate,$d1,$d2 -inttime,$d1,00:00,6hour -seldate,$dx,$dy $f $scratch/crop/$v.day.nc
 	fi
 	if [ $v == hus ] || [ $v == zg ];then
 		cp $scratch/crop/$v.day.nc  $scratch/zinter/$v.nc
@@ -220,9 +218,9 @@ for v in mrlsl tsl ; do
 		done
 		rm -f $scratch/crop/$v.foo.nc
 		cdo -s -r cat $scratch/crop/$v.mon*.nc $scratch/crop/$v.foo.nc
-		cdo -s -r  -interpolate,$scratch/crop/ua.nc -seldate,$d1,$d2 -inttime,$d1,00:00,6hour $scratch/crop/$v.foo.nc $scratch/crop/$v.nc
+		cdo -s -r -interpolate,$scratch/crop/ua.nc -seldate,$d1,$d2 -inttime,$d1,00:00,6hour $scratch/crop/$v.foo.nc $scratch/crop/$v.nc
 	else
-		cdo -s -r  -interpolate,$scratch/crop/ua.nc -seldate,$d1,$d2  -inttime,$d1,00:00,6hour -seldate,$dx,$dy $f $scratch/crop/$v.nc
+		cdo -s -r -interpolate,$scratch/crop/ua.nc -seldate,$d1,$d2 -inttime,$d1,00:00,6hour -seldate,$dx,$dy $f $scratch/crop/$v.nc
 	fi
 done
 
@@ -391,7 +389,6 @@ echo "DONE ... $mdl.$s.$dtx.grb"
 rm -r $scratch
 
 fi
-
 
 done
 

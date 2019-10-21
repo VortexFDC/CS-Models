@@ -4,12 +4,12 @@
 #
 #	Crea grib files para periodos de 2 dias.
 #		Necesita: experiment data-inici
-#		Model: CNRM-CM5
+#		Model: MPI-ESM-LR
 #
 #############
 
 ens=r1i1p1
-mdl=CNRM-CM5
+mdl=MPI-ESM-LR
 
 s=$1
 idate=$2
@@ -245,6 +245,7 @@ v=hus
 cp $scratch/crop/$v.day.nc  $scratch/zinter/$v.nc
 v=zg
 cp $scratch/crop/$v.day.nc  $scratch/zinter/$v.nc
+#ncl 'fn1="'$scratch'/crop/'$v'.day.nc"' fillmissing.ncl >> $scratch/hlev/foo.ncl.log # No se si cal...
 
 rm -f $scratch/crop/*.mon*.nc $scratch/crop/*.foo.nc $scratch/zinter/*.foo.nc 
 

@@ -4,12 +4,12 @@
 #
 #	Crea grib files para periodos de 2 dias.
 #		Necesita: experiment data-inici
-#		Model: CNRM-CM5
+#		Model: CMCC-CM
 #
 #############
 
 ens=r1i1p1
-mdl=CNRM-CM5
+mdl=CMCC-CM
 
 s=$1
 idate=$2

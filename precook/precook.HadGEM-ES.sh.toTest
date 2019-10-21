@@ -4,12 +4,12 @@
 #
 #	Crea grib files para periodos de 2 dias.
 #		Necesita: experiment data-inici
-#		Model: CNRM-CM5
+#		Model: HadGEM2-ES
 #
 #############
 
 ens=r1i1p1
-mdl=CNRM-CM5
+mdl=HadGEM2-ES
 
 s=$1
 idate=$2
@@ -127,6 +127,8 @@ if [ $v == ta ] || [ $v == ua ] || [ $v == va ];then
 
 		if [[ $freq == *"6hrP"* ]];then
 			cdo -s -r -seldate,$d1,$d2 $f $scratch/crop/$v.nc
+		elif [[ $freq == *"6hrL"* ]];then
+			cdo -s -r -invertlev -seldate,$d1,$d2 $f $scratch/crop/$v.nc
 		elif [[ $freq == *"mon"* ]];then
 			for m in $mx; do
 				if [ $m -gt 12 ];then
