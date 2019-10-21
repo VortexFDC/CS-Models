@@ -11,3 +11,5 @@ It needs to have an uems/run asociated.
 
 There will be a main script that does all at some point.
 days.base.sh and days.$run.$exp.lst may be the same among all runs or not...
+
+As some models (ex. HadGEM2-ES) only have 360 days per year days.$run.$exp.lst will be different for some models.
