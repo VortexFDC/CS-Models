@@ -2,6 +2,8 @@
 
 #####################
 #
+#	NOT IN USE
+#
 #	This script builds list of days to be used in a given run if the calendar of the model is 360_day
 #		Selects days as (c4 Convention) 1 day simulation (+0.5 spin up) every 24 days.
 #		Does this for all 3 experiments

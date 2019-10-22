@@ -37,8 +37,8 @@ for exp in rcp45 rcp85;do # historical rcp45 rcp85;do
 		syear=1981
 		eyear=2005
 	else
-		syear=`cat model-period.dict | grep $mdl | awk '{print substr($NF,1,4)}'`
-		eyear=`cat model-period.dict | grep $mdl | awk '{print substr($NF,6,4)}'`
+		syear=`cat ../model-period.dict | grep $mdl | awk '{print substr($NF,1,4)}'`
+		eyear=`cat ../model-period.dict | grep $mdl | awk '{print substr($NF,6,4)}'`
 	fi
 
 	# Select and cat files for year
