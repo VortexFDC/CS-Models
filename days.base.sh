@@ -2,7 +2,7 @@
 
 #####################
 #
-#	This script builds list of days to be used in a given run.
+#	This script builds list of days to be used in a given run. For models with regular calendar.
 #		Selects days as (c4 Convention) 1 day simulation (+0.5 spin up) every 24 days.
 #		Does this for all 3 experiments
 #
