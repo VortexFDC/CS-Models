@@ -16,7 +16,7 @@ spool_path="./spool"
 #rm -r spool
 mkdir -p spool/{cat,check,ready}
 
-for exp in historical;do # rcp45 rcp85;do
+for exp in rcp45 rcp85;do # historical rcp45 rcp85;do
 	data_path="/home/martin/storage/models/${mdl}/wget/raw-${exp}"
 	echo Getting data from: $data_path
 
@@ -32,13 +32,13 @@ for exp in historical;do # rcp45 rcp85;do
 		echo Using existing file to year dictionary: $dict
 	fi
 
-
+	# Set period
 	if [ $exp == historical ];then
 		syear=1981
 		eyear=2005
 	else
-		syear=2026
-		eyear=2046
+		syear=`cat model-period.dict | grep $mdl | awk '{print substr($NF,1,4)}'`
+		eyear=`cat model-period.dict | grep $mdl | awk '{print substr($NF,6,4)}'`
 	fi
 
 	# Select and cat files for year
@@ -55,23 +55,34 @@ for exp in historical;do # rcp45 rcp85;do
 			files=`grep ${varfreq}_ $dict | grep " $year" | awk '{print $1}'`
 			i=0
 			
-			rm -f $spool_path/cat/*
-			
-			for f in $files;do
-				ii=`printf "%02d\n" $i`
-				cdo -s selyear,$year $data_path/$f $spool_path/cat/$varfreq.$ii.nc
-				let i++
-			done
-			rm -f $spool_path/check/${varfreq}_${mdl}_${exp}_${ens}_${year}.nc
-			cdo -s cat $spool_path/cat/$varfreq.??.nc $spool_path/check/${varfreq}_${mdl}_${exp}_${ens}_${year}.nc
-			rm -f $spool_path/cat/*
-			
-			# Check for leap years
-			ref=`date +%Y-%m-%d -d "$year-01-01 365 day"`
-			if [ $ref == $((year+1))-01-01 ];then
-				ndays=365
+			# Check if file exists in check or in ready
+			if [ ! -f $spool_path/check/${varfreq}_${mdl}_${exp}_${ens}_${year}.nc ] && [ ! -f $spool_path/ready/${varfreq}_${mdl}_${exp}_${ens}_${year}.nc ];then
+				rm -f $spool_path/cat/*
+				
+				for f in $files;do
+					ii=`printf "%02d\n" $i`
+					cdo -s selyear,$year $data_path/$f $spool_path/cat/$varfreq.$ii.nc
+					let i++
+				done
+				rm -f $spool_path/check/${varfreq}_${mdl}_${exp}_${ens}_${year}.nc
+				cdo -s cat $spool_path/cat/$varfreq.??.nc $spool_path/check/${varfreq}_${mdl}_${exp}_${ens}_${year}.nc
+				rm -f $spool_path/cat/*
 			else
-				ndays=366
+				echo " ... File ${varfreq}_${mdl}_${exp}_${ens}_${year}.nc exists in check or ready"
+			fi
+		
+			# Check calendar
+			cal=`ncdump -h $spool_path/check/${varfreq}_${mdl}_${exp}_${ens}_${year}.nc | grep time:calendar | awk '{print $3}'`
+			if [ $cal == '"360_day"' ];then
+				ndays=360
+			else
+				# Check for leap years
+				ref=`date +%Y-%m-%d -d "$year-01-01 365 day"`
+				if [ $ref == $((year+1))-01-01 ];then
+					ndays=365
+				else
+					ndays=366
+				fi
 			fi
 			
 			## Check if files have all time-steps
