@@ -3,7 +3,7 @@
 #############
 #
 #	Crea grib files para periodos de 2 dias.
-#		Necesita: experiment data-inici
+#		Necesita: experiment data-inici ( y tener activado el conda env Rclassic )
 #		Model: HadGEM2-ES
 #
 #############
@@ -235,11 +235,11 @@ cdo -s interpolate,$scratch/hlev/foo.va.nc $scratch/hlev/foo.pressure.nc $scratc
 rm -f $scratch/hlev/foo.va.nc
 for v in hus ta ua va;do # hus ta ua va
 echo '		transform ... '$v
-	ncl 'fn1="'$scratch'/crop/'$v'.nc"' hh2pl.access.ncl >> $scratch/hlev/foo.ncl.log
+	ncl6 'fn1="'$scratch'/crop/'$v'.nc"' hh2pl.access.ncl >> $scratch/hlev/foo.ncl.log
 done
 
 v=zg
-ncl 'fn1="'$scratch'/crop/'$v'.day.nc"' fillmissing.ncl >> $scratch/hlev/foo.ncl.log
+ncl6 'fn1="'$scratch'/crop/'$v'.day.nc"' fillmissing.ncl >> $scratch/hlev/foo.ncl.log
 
 rm -f $scratch/crop/*.mon*.nc $scratch/crop/*.foo.nc $scratch/zinter/*.foo.nc 
 
@@ -358,7 +358,7 @@ v=sftlf
 f=$scratch/crop/tos.nc
 prm=$(grep -w $v param.tab | awk '{print $2}')
 typ=$(grep -w $v param.tab | awk '{print $3}')
-
+cdo -s -r -eqc,0  -setmisstoc,0 $f $scratch/crop/lsmask.nc
 cdo -s -r -f grb -setltype,$typ -chparam,-1,$prm $scratch/crop/lsmask.nc $scratch/merge/lsmask.grb
 
 fi
