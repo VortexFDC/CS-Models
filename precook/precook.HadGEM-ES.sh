@@ -381,7 +381,7 @@ cdo -s -r merge $scratch/merge/*.grb $scratch/merge/all.grb
 cdo1 -s settaxis,$d0,00:00,6hour $scratch/merge/all.grb $storage/out/wrfinput/$mdl.$s.$dtx.grb
 
 echo "DONE ... $mdl.$s.$dtx.grb"
-#rm -r $scratch
+rm -r $scratch
 
 fi
 
