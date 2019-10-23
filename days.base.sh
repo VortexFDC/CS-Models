@@ -8,16 +8,15 @@
 #
 #####################
 
-mdl=CNRM-CM5
 run=acciona-mx.v3
 
-for exp in historical ;do  #rcp45 rcp85;do
+for exp in historical rcp45 rcp85;do
 	if [ $exp == historical ];then
 		syear=1981
 		eyear=2005
-	else
-		syear=`cat model-period.dict | grep $mdl | awk '{print substr($NF,1,4)}'`
-		eyear=`cat model-period.dict | grep $mdl | awk '{print substr($NF,6,4)}'`
+	else 
+		syear=2020
+		eyear=2046
 	fi
 
 	sdate=$syear-01-02

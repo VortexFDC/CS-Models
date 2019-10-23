@@ -13,3 +13,7 @@ There will be a main script that does all at some point.
 days.base.sh and days.$run.$exp.lst may be the same among all runs or not...
 
 As some models (ex. HadGEM2-ES) only have 360 days per year days.$run.$exp.lst will be different for some models.
+
+Finally decided to create a uniq days.$run.$exp.lst where the periods to be executed never need more than 30 days in month and never crosses from one month to the next.
+
+To solve the direfent periods per model, same days.$run.$exp.lst file is used (for 25y), but the script that reads this file (run.precook.sh and run.wrf.sh) need to have this in mind.
