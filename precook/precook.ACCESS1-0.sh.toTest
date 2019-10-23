@@ -49,19 +49,19 @@ else
 	tslsi=tslsi
 fi
 
-#step=1  # crop
-#step=2  # 3D: interpolate pressure levels
-#step=3  # surface variables
-#step=4  # land variables
-#step=5  # land sea mask
-#step=6  # nc to grib
+#step=1 # crop
+#step=2 # 3D: interpolate pressure levels
+#step=3 # surface variables
+#step=4 # land variables
+#step=5 # land sea mask
+#step=6 # nc to grib
 
 for step in 1 2 3 4 5 6 ;do
 
 if [ $step -eq 1 ] ; then
 echo '## STEP 1 ##'
 
-if [ -d $scratch ] ; then rm -r $scratch  ;  fi
+if [ -d $scratch ] ; then rm -r $scratch ; fi
 mkdir -p $scratch
 for i in crop zinter ready grb merge tab hlev;do mkdir -p $scratch/$i ; done
 
@@ -185,7 +185,7 @@ else
 		cdo -s -r cat $scratch/crop/$v.mon*.nc $scratch/crop/$v.foo.nc
 		cdo -s -r selvar,$v -seldate,$d1,$d2 -inttime,$d1,00:00,6hour $scratch/crop/$v.foo.nc $scratch/crop/$v.day.nc
 	else
-		cdo -s -r selvar,$v -seldate,$d1,$d2  -inttime,$d1,00:00,6hour -seldate,$dx,$dy $f $scratch/crop/$v.day.nc
+		cdo -s -r selvar,$v -seldate,$d1,$d2 -inttime,$d1,00:00,6hour -seldate,$dx,$dy $f $scratch/crop/$v.day.nc
 	fi
 fi
 done
@@ -223,7 +223,7 @@ for v in mrlsl tsl ; do
 		cdo -s -r cat $scratch/crop/$v.mon*.nc $scratch/crop/$v.foo.nc
 		cdo -s -r -interpolate,$scratch/crop/ps.nc -selvar,$v -seldate,$d1,$d2 -inttime,$d1,00:00,6hour $scratch/crop/$v.foo.nc $scratch/crop/$v.nc
 	else
-		cdo -s -r  -interpolate,$scratch/crop/ps.nc -selvar,$v -seldate,$d1,$d2  -inttime,$d1,00:00,6hour -seldate,$dx,$dy $f $scratch/crop/$v.nc
+		cdo -s -r -interpolate,$scratch/crop/ps.nc -selvar,$v -seldate,$d1,$d2 -inttime,$d1,00:00,6hour -seldate,$dx,$dy $f $scratch/crop/$v.nc
 	fi
 done
 
@@ -252,15 +252,15 @@ echo '## STEP 2 ##'
 
 ## ta hus ua va zg
 for v in ta hus ua va zg;do
-echo "interpolating ... "  $v
+echo "interpolating ... " $v
 cdo -s -r -sellevel,$plev -intlevel,$plev $scratch/zinter/$v.nc $scratch/ready/$v.nc
 done
 
 nl=$(cdo -s -r -nlevel -selvar,ta $scratch/ready/ta.nc)
 echo "zaxistype = pressure
-size	  = $nl
-name	  = lev
-longname  = pressure
+size	 = $nl
+name	 = lev
+longname = pressure
 units	 = hPa
 levels	= $(echo $plev2 | sed 's/,/ /g')
 " > $scratch/tab/paxis
@@ -294,7 +294,7 @@ if [ "$v" == "uas" ] ; then h=10 ; fi
 if [ "$v" == "vas" ] ; then h=10 ; fi
 echo "... " $v
 echo "zaxistype = height
-	size	  = 1
+	size	 = 1
 	levels	= $h" > $scratch/tab/zaxis2m
 
 prm=$(grep -w $v param.tab | awk '{print $2}')
@@ -333,14 +333,14 @@ if [ $l -eq 2 ] ; then a=5 ; b=25 ; c=0.005 ; fi
 if [ $l -eq 3 ] ; then a=25 ; b=100 ; c=0.0013 ; fi
 if [ $l -eq 4 ] ; then a=100 ; b=200 ; c=0.001 ; fi
 echo "zaxistype = depth_below_land
-size	  = 1
-name	  = depth
-longname  = depth_below_land
+size	 = 1
+name	 = depth
+longname = depth_below_land
 units	 = cm
 lbounds	= $a
 ubounds	= $b" > $scratch/tab/soilzaixis
-cdo -s -r -f grb -setzaxis,$scratch/tab/soilzaixis -setltype,112 -chparam,-1,144 -mulc,$c -sellevidx,$l $scratch/zinter/soilm.nc  $scratch/grb/soilm.$l.grb
-cdo -s -r -f grb -setzaxis,$scratch/tab/soilzaixis -setltype,112 -chparam,-1,11  -sellevidx,$l $scratch/crop/tsl.nc  $scratch/grb/soilt.$l.grb
+cdo -s -r -f grb -setzaxis,$scratch/tab/soilzaixis -setltype,112 -chparam,-1,144 -mulc,$c -sellevidx,$l $scratch/zinter/soilm.nc $scratch/grb/soilm.$l.grb
+cdo -s -r -f grb -setzaxis,$scratch/tab/soilzaixis -setltype,112 -chparam,-1,11 -sellevidx,$l $scratch/crop/tsl.nc $scratch/grb/soilt.$l.grb
 done
 
 echo "merging soil variables ..."
@@ -358,7 +358,7 @@ v=sftlf
 f=$scratch/crop/tos.nc
 prm=$(grep -w $v param.tab | awk '{print $2}')
 typ=$(grep -w $v param.tab | awk '{print $3}')
-cdo -s -r -eqc,0  -setmisstoc,0 $f $scratch/crop/lsmask.nc
+cdo -s -r -eqc,0 -setmisstoc,0 $f $scratch/crop/lsmask.nc
 cdo -s -r -f grb -setltype,$typ -chparam,-1,$prm $scratch/crop/lsmask.nc $scratch/merge/lsmask.grb
 
 fi
