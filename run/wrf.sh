@@ -22,13 +22,13 @@ fdate=`date +%Y%m%d -d "$idate 2 day"`
 hours=36	# 1 day simulation + 0,5 day spinup
 
 # Find number of domains of the run
-d=`ls $path/$run/static/geo_em.d*.nc | wc -l`
+d=`ls $path/$run.$exp/static/geo_em.d*.nc | wc -l`
 t=`seq $d | tr '\n' ','`
 doms=`echo ${t:: -1}`
 
 ## Get data files from cloud1 (storage)
 echo Spliting days from $idate to $fdate ...
-cd $path/$run/grib
+cd $path/$run.$exp/grib
 rm -f $mdl.$exp.* cmip5*
 scp cloud1.vortex.es:/home/martin/storage/models/$mdl/out/wrfinput/$mdl.$exp.$idate.$fdate.grb .
 
@@ -49,7 +49,7 @@ fi
 
 ## Run ems_prep
 echo Runing ems_prep
-cd $path/$run
+cd $path/$run.$exp
 # 	To start al half day --cycle 12 
 ems_prep --dset cmip5:none:local --date $d0 -length $hours --cycle 12 --analysis --noaerosol --domain $doms 	# To start al half day --cycle 12 
 
