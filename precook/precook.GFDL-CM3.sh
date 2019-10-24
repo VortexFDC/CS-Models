@@ -3,13 +3,13 @@
 #############
 #
 #	Crea grib files para periodos de 2 dias.
-#		Necesita: experiment data-inici ( y tener activado el conda env Rclassic )
-#		Model: HadGEM2-ES
+#		Necesita: experiment data-inici
+#		Model: GFDL-CM3
 #
 #############
 
 ens=r1i1p1
-mdl=HadGEM2-ES
+mdl=GFDL-CM3
 
 s=$1
 idate=$2
@@ -38,8 +38,8 @@ storage=/home/martin/storage/models/$mdl
 
 if [ -f $storage/out/wrfinput/$mdl.$s.$dtx.grb ];then echo 'Grib file '$mdl.$s.$dtx'.grb already exists';exit;fi
 
-plev="100000,97500,95000,92500,90000,87500,85000,82500,80000,77500,75000,70000,65000,60000,55000,50000,45000,40000,35000,30000"
-plev2="1000,975,950,925,900,875,850,825,800,775,750,700,650,600,550,500,450,400,350,300"
+plev="100000,97500,95000,92500,90000,87500,85000,82500,80000,77500,75000,70000,65000,60000,55000,50000,45000,40000,35000,30000,25000,22500,20000,17500,15000,12500,10000,7000,5000,3000"
+plev2="1000,975,950,925,900,875,850,825,800,775,750,700,650,600,550,500,450,400,350,300,250,225,200,175,150,125,100,70,50,30"
 
 # Check if tslsi or ts
 isfile=`ls $storage/files/ | grep tslsi_ | wc -l`
@@ -64,15 +64,6 @@ echo '## STEP 1 ##'
 if [ -d $scratch ] ; then rm -r $scratch ; fi
 mkdir -p $scratch
 for i in crop zinter ready grb merge tab hlev;do mkdir -p $scratch/$i ; done
-# Create hh2pl scripts from template
-cat hh2pl.base.R | sed "s/XmodelX/$mdl/g" > $scratch/hh2pl.R
-cat hh2pl.base.ncl | sed "s/XmodelX/$mdl/g" > $scratch/hh2pl.ncl
-
-# Create ref.pressure.nc
-echo "Creating presure levels reference"
-cdo -s -r -seldate,$d1,$d2 $storage/files/ps_6hrLev_${mdl}_${s}_${ens}_$y1.nc $scratch/hlev/ps_short.nc
-cdo -s -r -seldate,$d1,$d2 $storage/files/ta_6hrLev_${mdl}_${s}_${ens}_$y1.nc $scratch/hlev/ta_short.nc
-R --slave < $scratch/hh2pl.R
 
 echo "crop period and interpolate ... " $d1 $d2
 
@@ -121,6 +112,7 @@ done
 # input.3d.grb
 # ta ta(day) ua ua(day) va va(day) hus zg
 
+# Cuando partimos de hybrid-lev no tendremos ta.day ua.day va.day
 for v in ta ua va hus zg ; do
 # Per les vars que poden tenir mes d'una freq
 if [ $v == ta ] || [ $v == ua ] || [ $v == va ];then
@@ -134,8 +126,10 @@ if [ $v == ta ] || [ $v == ua ] || [ $v == va ];then
 			f=$scratch/crop/$v.cat.nc
 		fi
 
-		if [[ $freq == *"6hr"* ]];then
+		if [[ $freq == *"6hrP"* ]];then
 			cdo -s -r -seldate,$d1,$d2 $f $scratch/crop/$v.nc
+		elif [[ $freq == *"6hrL"* ]];then
+			cdo -s -r -invertlev -seldate,$d1,$d2 $f $scratch/crop/$v.nc
 		elif [[ $freq == *"mon"* ]];then
 			for m in $mx; do
 				if [ $m -gt 12 ];then
@@ -152,9 +146,9 @@ if [ $v == ta ] || [ $v == ua ] || [ $v == va ];then
 			done
 			rm -f $scratch/crop/$v.day.foo.nc
 			cdo -s -r cat $scratch/crop/$v.mon*.nc $scratch/crop/$v.foo.nc
-			cdo -s -r selvar,$v -seldate,$d1,$d2 -inttime,$d1,00:00,6hour $scratch/crop/$v.foo.nc $scratch/crop/$v.day.nc
+			cdo -s -r -seldate,$d1,$d2 -inttime,$d1,00:00,6hour $scratch/crop/$v.foo.nc $scratch/crop/$v.day.nc
 		else
-			cdo -s -r selvar,$v -seldate,$d1,$d2 -inttime,$d1,00:00,6hour -seldate,$dx,$dy $f $scratch/crop/$v.day.nc
+			cdo -s -r -seldate,$d1,$d2 -inttime,$d1,00:00,6hour -seldate,$dx,$dy $f $scratch/crop/$v.day.nc
 		fi
 	done
 else
@@ -168,8 +162,10 @@ else
 			f=$scratch/crop/$v.cat.nc
 	fi
 
-	if [[ $freq == *"6hr"* ]];then
-		cdo -s -r selvar,$v -seldate,$d1,$d2 $f $scratch/crop/$v.nc
+	if [[ $freq == *"6hrP"* ]];then
+		cdo -s -r -seldate,$d1,$d2 $f $scratch/crop/$v.nc
+	elif [[ $freq == *"6hrL"* ]];then
+			cdo -s -r -invertlev -seldate,$d1,$d2 $f $scratch/crop/$v.nc
 	elif [[ $freq == *"mon"* ]];then
 		for m in $mx; do
 			if [ $m -gt 12 ];then
@@ -186,9 +182,9 @@ else
 		done
 		rm -f $scratch/crop/$v.foo.nc
 		cdo -s -r cat $scratch/crop/$v.mon*.nc $scratch/crop/$v.foo.nc
-		cdo -s -r selvar,$v -seldate,$d1,$d2 -inttime,$d1,00:00,6hour $scratch/crop/$v.foo.nc $scratch/crop/$v.day.nc
+		cdo -s -r -seldate,$d1,$d2 -inttime,$d1,00:00,6hour $scratch/crop/$v.foo.nc $scratch/crop/$v.day.nc
 	else
-		cdo -s -r selvar,$v -seldate,$d1,$d2 -inttime,$d1,00:00,6hour -seldate,$dx,$dy $f $scratch/crop/$v.day.nc
+		cdo -s -r -seldate,$d1,$d2 -inttime,$d1,00:00,6hour -seldate,$dx,$dy $f $scratch/crop/$v.day.nc
 	fi
 fi
 done
@@ -219,30 +215,47 @@ for v in mrlsl tsl ; do
 					cdo -s -r setday,1 -settime,00:00 -selmon,$m2 $f2 $scratch/crop/$v.mon$m.nc
 				fi
 			else
-				cdo -s -r setday,1 -settime,00:00:00 -selmon,$m $f $scratch/crop/$v.mon$m.nc
+				cdo -s -r setday,1 -settime,00:00 -selmon,$m $f $scratch/crop/$v.mon$m.nc
 			fi
 		done
 		rm -f $scratch/crop/$v.foo.nc
 		cdo -s -r cat $scratch/crop/$v.mon*.nc $scratch/crop/$v.foo.nc
-		cdo -s -r -interpolate,$scratch/crop/ps.nc -selvar,$v -seldate,$d1,$d2 -inttime,$d1,00:00,6hour $scratch/crop/$v.foo.nc $scratch/crop/$v.nc
+		cdo -s -r -interpolate,$scratch/crop/ps.nc -seldate,$d1,$d2 -inttime,$d1,00:00,6hour -selvar,$v $scratch/crop/$v.foo.nc $scratch/crop/$v.nc
 	else
-		cdo -s -r -interpolate,$scratch/crop/ps.nc -selvar,$v -seldate,$d1,$d2 -inttime,$d1,00:00,6hour -seldate,$dx,$dy $f $scratch/crop/$v.nc
+		cdo -s -r -interpolate,$scratch/crop/ps.nc -seldate,$d1,$d2 -inttime,$d1,00:00,6hour -seldate,$dx,$dy -selvar,$v $f $scratch/crop/$v.nc
 	fi
 done
 
-# rebuild 
+# IF HIBRID LEVELS ---
 echo "
 Transforming hybrid levels to pressure levels"
-cdo -s selvar,va $scratch/crop/va.nc $scratch/hlev/foo.va.nc
-cdo -s interpolate,$scratch/hlev/foo.va.nc $scratch/hlev/foo.pressure.nc $scratch/hlev/foo.pressure.va.nc
-rm -f $scratch/hlev/foo.va.nc
-for v in hus ta ua va;do # hus ta ua va
-echo '		transform ... '$v
-	ncl6 'fn1="'$scratch'/crop/'$v'.nc"' $scratch/hh2pl.ncl >> $scratch/hlev/foo.ncl.log
+# get ps
+px=$(ncdump -v,p0 $scratch/crop/ua.nc | tac | awk '(NR==2){print $3}')
+# hybrid levels
+echo "vct = " > $scratch/foo.a
+echo "0.0" >> $scratch/foo.a
+cdo1 -s -r outputf,%10.3f,2 -mulc,$px -selname,a_bnds $scratch/crop/ua.nc | awk '{print $1}' >> $scratch/foo.a
+echo "0.0" > $scratch/foo.b
+cdo1 -s -r outputf,%10.3f,2 -selname,b_bnds $scratch/crop/ua.nc | awk '{print $2}' >> $scratch/foo.b
+nl=$(cdo1 -s nlevel -selvar,ua $scratch/crop/ua.nc)
+echo "zaxistype = hybrid
+size	 = $nl
+levels	= $(seq -s" " 1 $nl )
+vctsize  = $[nl*2 +2]" > $scratch/tab/zaxisinvert
+cat $scratch/foo.a |tr '\n' ' ' >> $scratch/tab/zaxisinvert
+cat $scratch/foo.b |tr '\n' ' ' >> $scratch/tab/zaxisinvert
+
+export EXTRAPOLATE=1
+for v in hus ta ua va ;do
+echo "rebuild levels for" $v
+cdo -s -r setzaxis,$scratch/tab/zaxisinvert $scratch/crop/$v.nc $scratch/hlev/$v.hyb.nc
+cdo -s -r ml2pl,$plev $scratch/hlev/$v.hyb.nc $scratch/hlev/$v.prs.nc
+cdo1 -s -r selvar,$v $scratch/hlev/$v.prs.nc $scratch/zinter/$v.nc
 done
+# END --
 
 v=zg
-ncl6 'fn1="'$scratch'/crop/'$v'.day.nc"' fillmissing.ncl >> $scratch/hlev/foo.ncl.log
+ncl 'fn1="'$scratch'/crop/'$v'.day.nc"' fillmissing.ncl >> $scratch/hlev/foo.ncl.log
 
 rm -f $scratch/crop/*.mon*.nc $scratch/crop/*.foo.nc $scratch/zinter/*.foo.nc 
 
@@ -313,7 +326,7 @@ cdo -s -r -f grb setltype,$typ -chparam,-1,$prm -selname,$v $scratch/crop/$v.nc 
 done
 
 echo "... tos"
-cdo -s -r min $scratch/crop/$tslsi.nc $scratch/crop/tos.nc $scratch/crop/tsk.nc
+cdo -s -r min -selvar,$tslsi $scratch/crop/$tslsi.nc -selvar,tos $scratch/crop/tos.nc $scratch/crop/tsk.nc
 cdo -s -r -f grb -setltype,1 -chparam,-1,11 $scratch/crop/tsk.nc $scratch/grb/tsk.grb
 
 echo "merging near surface ..."
