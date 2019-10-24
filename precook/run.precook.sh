@@ -12,6 +12,10 @@ exp=historical
 
 mdl=HadGEM2-ES
 
+if [ $mdl == 'HadGEM2-ES' ] || [ $mdl == 'ACCESS1-0' ];then
+	conda activate Rclassic
+fi
+
 if [ $exp == historical ];then
 	syear=1981
 	eyear=2005
