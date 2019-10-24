@@ -4,11 +4,11 @@
 #
 #	Splits raw CMIP5 data for given model (all experiments) in one year files.
 #		Necesita: Check files remaining in spool/check/
-#		Works for: CNRM-CM5
+#		Works for: CNRM-CM5 HadGEM2-ES GFDL-CM3
 #
 #################
 
-mdl=HadGEM2-ES
+mdl=GFDL-CM3
 ens=r1i1p1
 
 spool_path="./spool"
@@ -16,7 +16,7 @@ spool_path="./spool"
 #rm -r spool
 mkdir -p spool/{cat,check,ready}
 
-for exp in rcp45 rcp85;do # historical rcp45 rcp85;do
+for exp in historical;do # historical rcp45 rcp85;do
 	data_path="/home/martin/storage/models/${mdl}/wget/raw-${exp}"
 	echo Getting data from: $data_path
 
@@ -73,8 +73,10 @@ for exp in rcp45 rcp85;do # historical rcp45 rcp85;do
 		
 			# Check calendar
 			cal=`ncdump -h $spool_path/check/${varfreq}_${mdl}_${exp}_${ens}_${year}.nc | grep time:calendar | awk '{print $3}'`
-			if [ $cal == '"360_day"' ];then
+			if [[ $cal == *"360_day"* ]];then
 				ndays=360
+			elif [[ $cal == *"365_day"* ]];then
+				ndays=365
 			else
 				# Check for leap years
 				ref=`date +%Y-%m-%d -d "$year-01-01 365 day"`
