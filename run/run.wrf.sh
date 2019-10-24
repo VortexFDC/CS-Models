@@ -33,3 +33,5 @@ for date in `cat days.$run.$exp.lst`;do
 	./wrf.sh $run $mdl $exp $date
 
 done
+
+#rm -r $run.$exp
