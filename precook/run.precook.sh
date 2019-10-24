@@ -8,20 +8,21 @@
 ######################################
 
 run=acciona-mx.v3
-exp=historical
+exp=rcp45
 
 mdl=HadGEM2-ES
 
-if [ $mdl == 'HadGEM2-ES' ] || [ $mdl == 'ACCESS1-0' ];then
-	conda activate Rclassic
-fi
+# Does not work...
+#if [ $mdl == 'HadGEM2-ES' ] || [ $mdl == 'ACCESS1-0' ];then
+#	conda activate Rclassic
+#fi
 
 if [ $exp == historical ];then
 	syear=1981
 	eyear=2005
 else
-	syear=`../cat model-period.dict | grep $mdl | awk '{print substr($NF,1,4)}'`
-	eyear=`../cat model-period.dict | grep $mdl | awk '{print substr($NF,6,4)}'`
+	syear=`cat ../model-period.dict | grep $mdl | awk '{print substr($NF,1,4)}'`
+	eyear=`cat ../model-period.dict | grep $mdl | awk '{print substr($NF,6,4)}'`
 fi
 
 
