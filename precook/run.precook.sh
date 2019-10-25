@@ -9,9 +9,11 @@
 ######################################
 
 run=acciona-mx.v3
-exp=rcp85
+exp=historical
 
-mdl=HadGEM2-ES
+mdl=GFDL-CM3
+
+mkdir -p /home/martin/storage/models/$mdl/out/wrfinput/
 
 if [ $mdl == 'HadGEM2-ES' ] || [ $mdl == 'ACCESS1-0' ];then
 	source /opt/anaconda/etc/profile.d/conda.sh

@@ -82,7 +82,7 @@ fi
 echo 'select ... '$v $freq
 if [ $v == tos ];then
 	cdo -s -r griddes $scratch/crop/psl.nc > $scratch/tab/reg.grid
-	cdo -s -r -remapdis,$scratch/tab/reg.grid -seldate,$d1,$d2 -inttime,$d1,00:00,6hour -seldate,$dx,$dy $f $scratch/crop/$v.nc
+	cdo -s -r -remapdis,$scratch/tab/reg.grid -seldate,$d1,$d2 -inttime,$d1,00:00,6hour -seldate,$dx,$dy -selvar,$v $f $scratch/crop/$v.nc
 else
 	if [[ $freq == *"6hr"* ]];then
 		cdo -s -r -seldate,$d1,$d2 $f $scratch/crop/$v.nc
@@ -255,7 +255,7 @@ done
 # END --
 
 v=zg
-ncl 'fn1="'$scratch'/crop/'$v'.day.nc"' fillmissing.ncl >> $scratch/hlev/foo.ncl.log
+ncl6 'fn1="'$scratch'/crop/'$v'.day.nc"' fillmissing.ncl >> $scratch/hlev/foo.ncl.log
 
 rm -f $scratch/crop/*.mon*.nc $scratch/crop/*.foo.nc $scratch/zinter/*.foo.nc 
 
