@@ -3,7 +3,8 @@
 ######################################
 #
 #	Executes precook for all days abailable for the given model (based on days.$run.$exp.lst) for the selected model and experiment (and run)
-#	Special case for HadGEM2-ES
+#	Special case for HadGEM2-ES in dates
+#	Spercial for HadGEM2-ES ACCESS1-0 in R enviroment
 #
 ######################################
 
@@ -12,10 +13,10 @@ exp=rcp85
 
 mdl=HadGEM2-ES
 
-# Does not work...
-#if [ $mdl == 'HadGEM2-ES' ] || [ $mdl == 'ACCESS1-0' ];then
-#	conda activate Rclassic
-#fi
+if [ $mdl == 'HadGEM2-ES' ] || [ $mdl == 'ACCESS1-0' ];then
+	source /opt/anaconda/etc/profile.d/conda.sh
+	conda activate Rclassic
+fi
 
 if [ $exp == historical ];then
 	syear=1981
