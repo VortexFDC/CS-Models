@@ -12,9 +12,10 @@ mdl=GFDL-CM3
 ens=r1i1p1
 
 spool_path="./spool"
+storage_path="/home/martin/storage/models/$mdl/files"
 
 #rm -r spool
-mkdir -p spool/{cat,check,ready}
+mkdir -p spool/{cat,check}
 
 for exp in historical;do # historical rcp45 rcp85;do
 	data_path="/home/martin/storage/models/${mdl}/wget/raw-${exp}"
@@ -55,8 +56,10 @@ for exp in historical;do # historical rcp45 rcp85;do
 			files=`grep ${varfreq}_ $dict | grep " $year" | awk '{print $1}'`
 			i=0
 			
-			# Check if file exists in check or in ready
-			if [ ! -f $spool_path/check/${varfreq}_${mdl}_${exp}_${ens}_${year}.nc ] && [ ! -f $spool_path/ready/${varfreq}_${mdl}_${exp}_${ens}_${year}.nc ];then
+			# Check if file exists in check or in storage
+			if [ ! -f $spool_path/check/${varfreq}_${mdl}_${exp}_${ens}_${year}.nc ] && [ ! -f $storage_path/${varfreq}_${mdl}_${exp}_${ens}_${year}.nc ];then
+				
+				echo ... Building $year
 				rm -f $spool_path/cat/*
 				
 				for f in $files;do
@@ -67,8 +70,11 @@ for exp in historical;do # historical rcp45 rcp85;do
 				rm -f $spool_path/check/${varfreq}_${mdl}_${exp}_${ens}_${year}.nc
 				cdo -s cat $spool_path/cat/$varfreq.??.nc $spool_path/check/${varfreq}_${mdl}_${exp}_${ens}_${year}.nc
 				rm -f $spool_path/cat/*
-			else
-				echo " ... File ${varfreq}_${mdl}_${exp}_${ens}_${year}.nc exists in check or ready"
+			elif [ -f $storage_path/${varfreq}_${mdl}_${exp}_${ens}_${year}.nc ];then
+				echo " ... File ${varfreq}_${mdl}_${exp}_${ens}_${year}.nc exists in storage"
+				continue
+			else [ -f $spool_path/check/${varfreq}_${mdl}_${exp}_${ens}_${year}.nc ]
+				echo " ... File ${varfreq}_${mdl}_${exp}_${ens}_${year}.nc need checking"
 			fi
 		
 			# Check calendar
@@ -93,7 +99,7 @@ for exp in historical;do # historical rcp45 rcp85;do
 
 			if [[ $freq == *"mon"* ]];then
 				if [ $ntime -eq 12 ];then
-					mv $spool_path/check/${varfreq}_${mdl}_${exp}_${ens}_${year}.nc $spool_path/ready/
+					mv $spool_path/check/${varfreq}_${mdl}_${exp}_${ens}_${year}.nc $storage_path/
 					#echo '    '${varfreq} ${year} ok!
 				else
 					echo '    Check FAILED For '${varfreq} ${year}
@@ -107,7 +113,7 @@ for exp in historical;do # historical rcp45 rcp85;do
 					const=8
 				fi
 				if [ $ntime -eq $(($ndays*$const)) ];then 
-					mv $spool_path/check/${varfreq}_${mdl}_${exp}_${ens}_${year}.nc $spool_path/ready/
+					mv $spool_path/check/${varfreq}_${mdl}_${exp}_${ens}_${year}.nc $storage_path/
 					#echo '    '${varfreq} ${year} ok!
 				else
 				    echo '    Check FAILED For '${varfreq} ${year} -- $ntime timesteps
@@ -120,5 +126,4 @@ for exp in historical;do # historical rcp45 rcp85;do
 	done
 done
 
-echo If all OK. Move files from spool/ready/ to ~/storage/models/$mdl/files/
 echo If there are files in spool/check/ corrections may need to be made.
