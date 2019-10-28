@@ -17,7 +17,7 @@ storage_path="/home/martin/storage/models/$mdl/files"
 #rm -r spool
 mkdir -p spool/{cat,check}
 
-for exp in historical;do # historical rcp45 rcp85;do
+for exp in rcp85 ;do # historical rcp45 rcp85;do
 	data_path="/home/martin/storage/models/${mdl}/wget/raw-${exp}"
 	echo Getting data from: $data_path
 

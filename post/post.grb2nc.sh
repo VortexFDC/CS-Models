@@ -3,13 +3,13 @@
 source /home/gil/.profile.local
 
 run=acciona-mx.v3
-mdl=CNRM-CM5
+mdl=HadGEM2-ES
 
 mkdir -p nc
 
 for dm in d01 d02 d03 ;do
 
-	for scen in rcp85 ;do
+	for scen in historical rcp85 ;do
 		rdir=/home/martin/storage/models/$mdl/out/wrfoutput/$run/$scen/grib/
 		
 		#grib2nc :  81km -> 0.75 / 27km -> 0.25 / 9km -> 0.075 / 3km -> 0.025
