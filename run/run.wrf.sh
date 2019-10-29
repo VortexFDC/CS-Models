@@ -4,12 +4,13 @@
 #
 #	Runs WRF for all days abailable for the given model (based on days.$run.$exp.lst) for the selected model and experiment (and run)
 #	Special case for HadGEM2-ES
+#		Launch as: nohup run.wrf.sh > nohup.$exp.out 2>&1 &
 #
 ######################################
 
 run=acciona-mx.v3
-mdl=HadGEM2-ES
-exp=historical
+mdl=GFDL-CM3
+exp=rcp85
 
 scp cloud1.vortex.es:/home/martin/models/head/{model-period.dict,days.$run.$exp.lst} .
 
@@ -34,4 +35,4 @@ for date in `cat days.$run.$exp.lst`;do
 
 done
 
-#rm -r $run.$exp
+rm -r $run.$exp
