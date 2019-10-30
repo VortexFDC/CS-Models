@@ -11,7 +11,7 @@
 run=acciona-mx.v3
 exp=rcp85
 
-mdl=GFDL-CM3
+mdl=ACCESS1-0
 
 mkdir -p /home/martin/storage/models/$mdl/out/wrfinput/
 

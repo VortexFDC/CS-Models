@@ -3,7 +3,7 @@
 #############
 #
 #	Crea grib files para periodos de 2 dias.
-#		Necesita: experiment data-inici
+#		Necesita: experiment data-inici ( y tener activado el conda env Rclassic )
 #		Model: ACCESS1-0 (Hybrid)
 #
 #############
@@ -64,12 +64,15 @@ echo '## STEP 1 ##'
 if [ -d $scratch ] ; then rm -r $scratch ; fi
 mkdir -p $scratch
 for i in crop zinter ready grb merge tab hlev;do mkdir -p $scratch/$i ; done
+# Create hh2pl scripts from template
+cat hh2pl.base.R | sed "s/XmodelX/$mdl/g" > $scratch/hh2pl.R
+cat hh2pl.base.ncl | sed "s/XmodelX/$mdl/g" > $scratch/hh2pl.ncl
 
 # Create ref.pressure.nc
 echo "Creating presure levels reference"
 cdo -s -r -seldate,$d1,$d2 $storage/files/ps_6hrLev_${mdl}_${s}_${ens}_$y1.nc $scratch/hlev/ps_short.nc
 cdo -s -r -seldate,$d1,$d2 $storage/files/ta_6hrLev_${mdl}_${s}_${ens}_$y1.nc $scratch/hlev/ta_short.nc
-R --slave < hh2pl.access.R
+R --slave < $scratch/hh2pl.R
 
 echo "crop period and interpolate ... " $d1 $d2
 
@@ -216,7 +219,7 @@ for v in mrlsl tsl ; do
 					cdo -s -r setday,1 -settime,00:00 -selmon,$m2 $f2 $scratch/crop/$v.mon$m.nc
 				fi
 			else
-				cdo -s -r setday,1 -settime,00:00:00 -selmon,$m $f $scratch/crop/$v.mon$m.nc # :00 needed for seconds?
+				cdo -s -r setday,1 -settime,00:00:00 -selmon,$m $f $scratch/crop/$v.mon$m.nc
 			fi
 		done
 		rm -f $scratch/crop/$v.foo.nc
@@ -235,11 +238,11 @@ cdo -s interpolate,$scratch/hlev/foo.va.nc $scratch/hlev/foo.pressure.nc $scratc
 rm -f $scratch/hlev/foo.va.nc
 for v in hus ta ua va;do # hus ta ua va
 echo '		transform ... '$v
-	ncl 'fn1="scratch.ACCESS1-0/crop/'$v'.nc"' hh2pl.access.ncl >> $scratch/hlev/foo.ncl.log
+	ncl6 'fn1="'$scratch'/crop/'$v'.nc"' $scratch/hh2pl.ncl >> $scratch/hlev/foo.ncl.log
 done
 
 v=zg
-ncl 'fn1="'$scratch'/crop/'$v'.day.nc"' fillmissing.ncl >> $scratch/hlev/foo.ncl.log
+ncl6 'fn1="'$scratch'/crop/'$v'.day.nc"' fillmissing.ncl >> $scratch/hlev/foo.ncl.log
 
 rm -f $scratch/crop/*.mon*.nc $scratch/crop/*.foo.nc $scratch/zinter/*.foo.nc 
 
