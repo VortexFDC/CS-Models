@@ -1,9 +1,16 @@
 #!/bin/bash
 
+##########################
+#
+#	Script de post proceso de un run a partir de grid2.
+#	Selecciona las variables que esten en la lista var.lst y las pasa a netCDF
+#
+##########################
+
 source /home/gil/.profile.local
 
 run=acciona-mx.v3
-mdl=HadGEM2-ES
+mdl=GFDL-CM3
 
 mkdir -p nc
 
@@ -12,7 +19,7 @@ for dm in d01 d02 d03 ;do
 	for scen in historical rcp85 ;do
 		rdir=/home/martin/storage/models/$mdl/out/wrfoutput/$run/$scen/grib/
 		
-		#grib2nc :  81km -> 0.75 / 27km -> 0.25 / 9km -> 0.075 / 3km -> 0.025
+#		grib2nc :  81km -> 0.75 / 27km -> 0.25 / 9km -> 0.075 / 3km -> 0.025
 		if [ "$dm" == "d01" ] ; then dx=0.75 ; dy=0.75 ; fi
 		if [ "$dm" == "d02" ] ; then dx=0.25 ; dy=0.25 ; fi
 		if [ "$dm" == "d03" ] ; then dx=0.075 ; dy=0.075 ; fi
