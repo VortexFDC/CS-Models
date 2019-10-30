@@ -8,7 +8,7 @@
 #
 #################
 
-mdl=GFDL-CM3
+mdl=ACCESS1-0
 ens=r1i1p1
 
 spool_path="./spool"
@@ -16,6 +16,7 @@ storage_path="/home/martin/storage/models/$mdl/files"
 
 #rm -r spool
 mkdir -p spool/{cat,check}
+mkdir -p $storage_path
 
 for exp in rcp85 ;do # historical rcp45 rcp85;do
 	data_path="/home/martin/storage/models/${mdl}/wget/raw-${exp}"
@@ -45,7 +46,7 @@ for exp in rcp85 ;do # historical rcp45 rcp85;do
 	# Select and cat files for year
 	for varfreq in `ls $data_path | awk -F_ '{print $1"_"$2}' | sort | uniq`;do
 		## If need to filter a var for debugging
-		#if [ $varfreq != 'va_day' ];then
+		#if [ $varfreq != 'ps_3hr' ];then
 		#	echo ' 'Skipping $varfreq
 		#	continue
 		#fi
@@ -114,7 +115,7 @@ for exp in rcp85 ;do # historical rcp45 rcp85;do
 				fi
 				if [ $ntime -eq $(($ndays*$const)) ];then 
 					mv $spool_path/check/${varfreq}_${mdl}_${exp}_${ens}_${year}.nc $storage_path/
-					#echo '    '${varfreq} ${year} ok!
+					echo '    '${varfreq} ${year} ok!
 				else
 				    echo '    Check FAILED For '${varfreq} ${year} -- $ntime timesteps
 					# Anyadir que si $year es $syear puede tener todos-1 timesteps
