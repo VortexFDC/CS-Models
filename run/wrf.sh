@@ -30,7 +30,7 @@ doms=`echo ${t:: -1}`
 echo Spliting days from $idate to $fdate ...
 cd $path/$run.$exp/grib
 rm -f $mdl.$exp.* cmip5*
-scp cloud1.vortex.es:/home/martin/storage/models/$mdl/out/wrfinput/$mdl.$exp.$idate.$fdate.grb .
+scp cloud1.vortex.es:/home/martin/storage/models/$mdl/wrfinput/$mdl.$exp.$idate.$fdate.grb .
 
 # Split days
 echo $idate $fdate $hours
@@ -60,7 +60,7 @@ ems_run --domain $doms
 ems_post --grib  --domain $doms
 
 ## Move wrfouts to cloud1 (storage)
-savePath=/home/martin/storage/models/$mdl/out/wrfoutput/$run/$exp/grib/$idate.$fdate/
+savePath=/home/martin/storage/runs/$run/wrfoutput/$mdl/$exp/$idate.$fdate/
 echo Moving files to cloud1.vortex.es:$savePath
 ssh cloud1.vortex.es 'mkdir -p '$savePath
 scp emsprd/grib/* cloud1.vortex.es:$savePath
