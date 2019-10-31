@@ -9,7 +9,7 @@
 ######################################
 
 run=acciona-mx.v3
-mdl=GFDL-CM3
+mdl=ACCESS1-0
 exp=rcp85
 
 scp cloud1.vortex.es:/home/martin/models/head/{model-period.dict,days.$run.$exp.lst} .
