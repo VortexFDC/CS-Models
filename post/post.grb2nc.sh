@@ -17,7 +17,7 @@ mkdir -p nc
 for dm in d01 d02 d03 ;do
 
 	for scen in historical rcp85 ;do
-		rdir=/home/martin/storage/models/$mdl/out/wrfoutput/$run/$scen/grib/
+		rdir=/home/martin/storage/runs/$run/wrfoutput/$mdl/$scen/
 		
 #		grib2nc :  81km -> 0.75 / 27km -> 0.25 / 9km -> 0.075 / 3km -> 0.025
 		if [ "$dm" == "d01" ] ; then dx=0.75 ; dy=0.75 ; fi
@@ -79,8 +79,9 @@ for dm in d01 d02 d03 ;do
 			done
 		cdo -s setname,$v $o wrf.$scen.$run.$dm.$v.nc
 		rm $o
-		mv wrf.$scen.$run.$dm.$v.nc /home/martin/storage/models/$mdl/out/wrfoutput/$run/$scen/
-		echo "Files stored in: /home/martin/storage/models/$mdl/out/wrfoutput/$run/$scen/"
+		save_path="/home/martin/storage/runs/$run/nc/$mdl/"
+		mv wrf.$scen.$run.$dm.$v.nc $save_path
+		echo "Files stored in: $save_path"
 		done
 	done
 done
