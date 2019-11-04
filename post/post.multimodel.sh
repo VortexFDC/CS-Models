@@ -19,8 +19,8 @@ models\t\td01\td02\td03" >> summary.$var
 		echo $mdl > foo.d00
 		for dom in d01 d02 d03;do
 			f=$models_path/$mdl/wrf.$exp.$run.$dom.$var.nc
-			cdo -s timmean $f $mdl.$exp.mean.$var.$dom.nc
-			cdo -s info -fldmean $mdl.$exp.mean.$var.$dom.nc | awk '{print $9}' > foo.$dom
+			cdo -s timmean $f $mdl.$exp.$dom.mean.$var.nc
+			cdo -s info -fldmean $mdl.$exp.$dom.mean.$var.nc | awk '{print $9}' > foo.$dom
 		done
 	
 		# Save d03 only

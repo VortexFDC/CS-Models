@@ -10,7 +10,7 @@
 source /home/gil/.profile.local
 
 run=acciona-mx.v3
-mdl=GFDL-CM3
+mdl=ACCESS1-0
 
 mkdir -p nc
 
