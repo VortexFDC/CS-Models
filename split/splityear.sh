@@ -127,4 +127,25 @@ for exp in historical ;do # historical rcp45 rcp85;do
 	done
 done
 
+## Create special variables
+if [ $mdl == "CMCC-CM" ];then
+	echo Creatting huss variable for CMCC-CM
+	for exp in historical rcp45 rcp85;do
+		for year in `seq $syear $eyear`; do
+			if [ -f $storage_path/hus_day_${mdl}_${exp}_${ens}_${year}.nc ] && [ ! -f $storage_path/huss_day_${mdl}_${exp}_${ens}_${year}.nc ];then
+				cdo -s setname,huss -sellevidx,1 $storage_path/hus_day_${mdl}_${exp}_${ens}_${year}.nc $storage_path/huss_day_${mdl}_${exp}_${ens}_${year}.nc
+			fi
+		done
+	done
+	
+	echo Creatting mrlsl variable for CMCC-CM
+	for exp in historical rcp45 rcp85;do
+		for year in `seq $syear $eyear`; do
+			if [ ! -f $storage_path/mrlsl_Lmon_${mdl}_${exp}_${ens}_${year}.nc ];then
+				cp ~/storage/fake-mrlsl/mrlsl_Lmon_MODEL_EXP_ENS_YEAR.nc $storage_path/mrlsl_Lmon_${mdl}_${exp}_${ens}_${year}.nc
+			fi
+		done
+	done
+fi
+
 echo If there are files in spool/check/ corrections may need to be made.
