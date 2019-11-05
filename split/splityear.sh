@@ -4,11 +4,11 @@
 #
 #	Splits raw CMIP5 data for given model (all experiments) in one year files.
 #		Necesita: Check files remaining in spool/check/
-#		Works for: CNRM-CM5 HadGEM2-ES GFDL-CM3
+#		Works for: CNRM-CM5 HadGEM2-ES GFDL-CM3 CMCC-CM
 #
 #################
 
-mdl=ACCESS1-0
+mdl=CMCC-CM
 ens=r1i1p1
 
 spool_path="./spool"
@@ -18,7 +18,7 @@ storage_path="/home/martin/storage/models/$mdl/files"
 mkdir -p spool/{cat,check}
 mkdir -p $storage_path
 
-for exp in rcp85 ;do # historical rcp45 rcp85;do
+for exp in historical ;do # historical rcp45 rcp85;do
 	data_path="/home/martin/storage/models/${mdl}/wget/raw-${exp}"
 	echo Getting data from: $data_path
 
