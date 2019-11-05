@@ -142,7 +142,7 @@ if [ $mdl == "CMCC-CM" ];then
 	for exp in historical rcp45 rcp85;do
 		for year in `seq $syear $eyear`; do
 			if [ ! -f $storage_path/mrlsl_Lmon_${mdl}_${exp}_${ens}_${year}.nc ];then
-				cp ~/storage/fake-mrlsl/mrlsl_Lmon_MODEL_EXP_ENS_YEAR.nc $storage_path/mrlsl_Lmon_${mdl}_${exp}_${ens}_${year}.nc
+				cdo -s setyear,$year ~/storage/fake-mrlsl/mrlsl_Lmon_MODEL_EXP_ENS_YEAR.nc $storage_path/mrlsl_Lmon_${mdl}_${exp}_${ens}_${year}.nc
 			fi
 		done
 	done
