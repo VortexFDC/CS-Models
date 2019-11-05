@@ -80,6 +80,7 @@ for dm in d01 d02 d03 ;do
 		cdo -s setname,$v $o wrf.$scen.$run.$dm.$v.nc
 		rm $o
 		save_path="/home/martin/storage/runs/$run/nc/$mdl/"
+		mkdir -p $save_path
 		mv wrf.$scen.$run.$dm.$v.nc $save_path
 		echo "Files stored in: $save_path"
 		done
