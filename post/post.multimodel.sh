@@ -14,7 +14,7 @@ models\t\td01\td02\td03" >> summary.$var
 	for mdl in `ls $models_path`;do
 		f=$models_path/$mdl/wrf.$exp.$run.d01.$var.nc
 		if [ ! -f $f ];then continue;fi
-		echo Getting results for $mdl ($exp) ...
+		echo Getting results for $mdl $exp ...
 		
 		echo $mdl > foo.d00
 		for dom in d01 d02 d03;do
