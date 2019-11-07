@@ -4,12 +4,12 @@
 #
 #	Crea grib files para periodos de 2 dias.
 #		Necesita: experiment data-inici
-#		Model: inmcm4
+#		Model: INM-CM4
 #
 #############
 
 ens=r1i1p1
-mdl=inmcm4
+mdl=INM-CM4
 
 s=$1
 idate=$2
@@ -36,7 +36,7 @@ fi
 scratch=scratch.$mdl
 storage=/home/martin/storage/models/$mdl
 
-if [ -f $storage/out/wrfinput/$mdl.$s.$dtx.grb ];then echo 'Grib file '$mdl.$s.$dtx'.grb already exists';exit;fi
+if [ -f $storage/wrfinput/$mdl.$s.$dtx.grb ];then echo 'Grib file '$mdl.$s.$dtx'.grb already exists';exit;fi
 
 plev="100000,97500,95000,92500,90000,87500,85000,82500,80000,77500,75000,70000,65000,60000,55000,50000,45000,40000,35000,30000,25000,22500,20000,17500,15000,12500,10000,7000,5000,3000"
 plev2="1000,975,950,925,900,875,850,825,800,775,750,700,650,600,550,500,450,400,350,300,250,225,200,175,150,125,100,70,50,30"
@@ -383,7 +383,7 @@ else
 fi
 
 cdo -s -r merge $scratch/merge/*.grb $scratch/merge/all.grb
-cdo1 -s settaxis,$d0,00:00,6hour $scratch/merge/all.grb $storage/out/wrfinput/$mdl.$s.$dtx.grb
+cdo1 -s settaxis,$d0,00:00,6hour $scratch/merge/all.grb $storage/wrfinput/$mdl.$s.$dtx.grb
 
 echo "DONE ... $mdl.$s.$dtx.grb"
 rm -r $scratch

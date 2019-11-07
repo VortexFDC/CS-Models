@@ -11,7 +11,7 @@
 run=acciona-mx.v3
 exp=historical
 
-mdl=CMCC-CM
+mdl=INM-CM4
 
 mkdir -p /home/martin/storage/models/$mdl/wrfinput/
 
