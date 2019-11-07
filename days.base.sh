@@ -22,14 +22,7 @@ for exp in historical rcp45 rcp85;do
 	sdate=$syear-01-02
 	ydate=$sdate
 
-     # May only be needed for HadGEM
-	if [ $exp == historical ] && [ $mdl == HadGEM2-ES ] ;then
-		edate=$eyear-11-30
-	elif  [ $exp == historical ];then
-		edate=$eyear-12-30
-	else
-		edate=$eyear-12-30
-	fi
+	edate=$eyear-12-30
 
 	rm -f days.$run.$exp.lst
 	echo Building list of days for $run $exp
