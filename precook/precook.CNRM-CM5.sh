@@ -17,7 +17,7 @@ idate=$2
 if [ -z "$idate" ] || [ `echo $idate | awk -F- '{print NF}'` -ne 3 ];then echo 'Please specify start date in format YYYY-MM-DD';exit;fi
 
 d1=$idate							# Inicio SHORT
-d2=`date +%Y-%m-%d -d "$d1 2 day"`	# Final SHORT
+d2=`date +%Y-%m-%d -d "$d1 0 day"`	# Final SHORT
 dx=`date +%Y-%m-%d -d "$d1 -1 day"` # Inicio LONG
 dy=`date +%Y-%m-%d -d "$d2 1 day"`	# Final LONG
 
