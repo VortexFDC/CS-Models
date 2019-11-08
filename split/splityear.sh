@@ -8,7 +8,7 @@
 #
 #################
 
-mdl=INM-CM4
+mdl=IPSL-CM5A-LR
 ens=r1i1p1
 
 spool_path="./spool"
