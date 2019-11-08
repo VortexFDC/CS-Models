@@ -33,7 +33,6 @@ for date in `cat ../days.full.$exp.lst`;do
 	if [ `echo $date | sed 's/-//g'` -gt ${eyear}1227 ];then break;fi
 	if [ $mdl == HadGEM2-ES ] && [ $exp == historical ] && [ `echo $date | sed 's/-//g'` -gt ${eyear}1127 ];then break;fi
 	
-	echo $date
-	#./precook.$mdl.sh $exp $date
+	./precook.$mdl.sh $exp $date
 
 done
