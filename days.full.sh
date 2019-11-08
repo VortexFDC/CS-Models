@@ -52,8 +52,6 @@ for exp in historical rcp45 rcp85;do
 		
 		echo $xdate >> days.full.$exp.lst
 		
-		# Until here
-		i=$[$i+1]
 	done
 	njobs=`cat days.full.$exp.lst | wc -l`
 	echo "... $njobs jobs will be needed"
