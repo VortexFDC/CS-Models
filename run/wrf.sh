@@ -25,18 +25,33 @@ savePath=/home/martin/storage/runs/$run/wrfoutput/$mdl/$exp/$idate.$fdate/
 ssh cloud1.vortex.es 'mkdir -p '$savePath
 # Check if run exists in storage
 wrks=`ssh cloud1.vortex.es 'ls '$savePath' | wc -l'`
-if [ $wrks -eq 111 ];then echo 'Work previously computed. Skipping...';exit;fi
+if [ $wrks -eq $(((hours+1)*3)) ];then echo 'Work previously computed. Skipping...';exit;fi
 
 # Find number of domains of the run
 d=`ls $path/$run.$exp/static/geo_em.d*.nc | wc -l`
 t=`seq $d | tr '\n' ','`
 doms=`echo ${t:: -1}`
 
+# ------
 ## Get data files from cloud1 (storage)
-echo Spliting days from $idate to $fdate ...
+echo Getting data from $idate to $fdate ...
 cd $path/$run.$exp/grib
 rm -f $mdl.$exp.* cmip5*
-scp cloud1.vortex.es:/home/martin/storage/models/$mdl/wrfinput/$mdl.$exp.$idate.$fdate.grb .
+yyyy=`echo ${idate:0:4}`
+mm=`echo ${idate:4:2}`
+dd=`echo ${idate:6:2}`
+scp cloud1.vortex.es:/home/martin/storage/models/$mdl/wrfinput/$yyyy/$yyyy.$mm/$mdl.$exp.$yyyy$mm${dd}{12,18}.grb.rar .
+dd=`printf "%02d" $((dd+1))`
+scp cloud1.vortex.es:/home/martin/storage/models/$mdl/wrfinput/$yyyy/$yyyy.$mm/$mdl.$exp.$yyyy$mm${dd}{00,06,12,18}.grb.rar .
+dd=`printf "%02d" $((dd+1))`
+scp cloud1.vortex.es:/home/martin/storage/models/$mdl/wrfinput/$yyyy/$yyyy.$mm/$mdl.$exp.$yyyy$mm${dd}00.grb.rar .
+
+for f in `ls`;do
+	rar e $f
+	rm -f $f
+done
+
+# UEMS WRF NECESITA grb POR DIA, NO CADA 6H
 
 # Split days
 echo $idate $fdate $hours
@@ -45,6 +60,8 @@ for d in `cdo -s showdate $mdl.$exp.$idate.$fdate.grb`;do
 	n=`echo $d | sed 's/-//g'`
 	cdo -s seldate,$d $mdl.$exp.$idate.$fdate.grb cmip5.$n.grb
 done
+
+# -------
 
 # Shifttime when rcpXX
 if [[ $exp == *"rcp"* ]];then
