@@ -9,9 +9,9 @@
 ######################################
 
 run=acciona-mx.v3
-exp=rcp85
+exp=historical
 
-mdl=INM-CM4
+mdl=IPSL-CM5A-LR
 
 mkdir -p /home/martin/storage/models/$mdl/wrfinput/
 
