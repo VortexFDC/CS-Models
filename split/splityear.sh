@@ -8,7 +8,7 @@
 #
 #################
 
-mdl=IPSL-CM5A-LR
+mdl=MPI-ESM-LR
 ens=r1i1p1
 
 spool_path="./spool"
