@@ -33,7 +33,7 @@ else
 	mx=`printf "%02d %02d %02d" $m1 $(($m1+1)) $(($m1+2))`
 fi
 
-scratch=scratch.$mdl
+scratch=scratch.$mdl.$s
 storage=/home/martin/storage/models/$mdl
 
 if [ -f $storage/wrfinput/$mdl.$s.$dtx.grb ];then echo 'Grib file '$mdl.$s.$dtx'.grb already exists';exit;fi
