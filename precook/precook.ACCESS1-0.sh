@@ -37,7 +37,7 @@ m1=`printf "%02d" $m1`
 
 scratch=scratch.$mdl
 storage=/home/martin/storage/models/$mdl
-save=$storage/wrfinput/$y1/$y1.$m1
+save=/home/martin/storage/reanalysis/$mdl/$y1/$y1.$m1
 mkdir -p $save
 # Name will be: $mdl.$s.YYYYMMDDHH.grb.rar || dtx=YYYYMMDD
 
