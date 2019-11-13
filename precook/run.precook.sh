@@ -11,7 +11,7 @@
 run=acciona-mx.v3
 exp=rcp85
 
-mdl=IPSL-CM5A-LR
+mdl=MPI-ESM-LR
 
 mkdir -p /home/martin/storage/models/$mdl/wrfinput/
 
