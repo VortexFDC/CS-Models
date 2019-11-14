@@ -391,7 +391,7 @@ cdo1 -s settaxis,$d0,00:00,6hour $scratch/merge/all.grb $scratch/merge/$mdl.$s.$
 for ts in 00 06 12 18;do
 	cdo -s selhour,$ts $scratch/merge/$mdl.$s.${dtx}.grb $scratch/merge/$mdl.$s.${dtx}${ts}.grb
 	rar a -inul $save/$mdl.$s.${dtx}${ts}.grb.rar $scratch/merge/$mdl.$s.${dtx}${ts}.grb
-	echo "DONE ... $mdl.$s.$dtx.$ts.grb.rar"
+	echo "DONE ... $mdl.$s.${dtx}${ts}.grb.rar"
 done
 
 rm -r $scratch
