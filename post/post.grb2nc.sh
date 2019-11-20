@@ -10,13 +10,15 @@
 source /home/gil/.profile.local
 
 run=acciona-mx.v3
-mdl=ACCESS1-0
+mdl=IPSL-CM5A-LR
 
 mkdir -p nc
 
-for dm in d01 d02 d03 ;do
+echo 'Processing WRF output for '$mdl
+for dm in d01 d02 d03;do
 
-	for scen in historical rcp85 ;do
+	for scen in rcp85 ;do # rcp85 ;do
+		echo ' Working on '$scen $dm
 		rdir=/home/martin/storage/runs/$run/wrfoutput/$mdl/$scen/
 		
 #		grib2nc :  81km -> 0.75 / 27km -> 0.25 / 9km -> 0.075 / 3km -> 0.025
@@ -32,10 +34,12 @@ for dm in d01 d02 d03 ;do
 			
 			code=$(grep $v var.lst | awk -F, '{print $2}')
 			o=nc/wrf.$scen.$run.$dm.$v.nc
+
 			rm -f $o
 			rm -f grid.info
 		
 			for d in $(ls $rdir );do
+				#echo $d
 			
 			    ls $rdir/$d | grep wrfout_arw_$dm > foo.1
 				awk -Fgrb2f '{printf "%09.0f\n", $NF}' foo.1 > foo.2
@@ -77,7 +81,12 @@ for dm in d01 d02 d03 ;do
 					rm foo*
 				done
 			done
-		cdo -s setname,$v $o wrf.$scen.$run.$dm.$v.nc
+		if [ $code -eq 308 ];then
+			cdo -s chname,VGRD_80maboveground,va -chname,UGRD_80maboveground,ua $o wrf.$scen.$run.$dm.$v.nc
+		else
+			cdo -s setname,$v $o wrf.$scen.$run.$dm.$v.nc
+		fi
+
 		rm $o
 		save_path="/home/martin/storage/runs/$run/nc/$mdl/"
 		mkdir -p $save_path
