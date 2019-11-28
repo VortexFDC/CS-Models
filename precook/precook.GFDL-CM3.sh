@@ -178,7 +178,7 @@ else
 				fi
 			else
 				cdo -s -r setday,1 -settime,00:00 -selmon,$m $f $scratch/crop/$v.mon$m.nc
-			 fi
+			fi
 		done
 		rm -f $scratch/crop/$v.foo.nc
 		cdo -s -r cat $scratch/crop/$v.mon*.nc $scratch/crop/$v.foo.nc
