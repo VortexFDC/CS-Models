@@ -4,11 +4,11 @@
 #
 #	Splits raw CMIP5 data for given model (all experiments) in one year files.
 #		Necesita: Check files remaining in spool/check/
-#		Works for: CNRM-CM5 HadGEM2-ES GFDL-CM3 CMCC-CM INM-CM4
+#		Works for: CNRM-CM5 HadGEM2-ES GFDL-CM3 CMCC-CM INM-CM4 IPSL-CM5A-LR MPI-ESM-LR
 #
 #################
 
-mdl=MPI-ESM-LR
+mdl=MIROC-ESM
 ens=r1i1p1
 
 spool_path="./spool"
