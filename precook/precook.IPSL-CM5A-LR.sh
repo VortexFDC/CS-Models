@@ -4,7 +4,7 @@
 #
 #	Crea grib files para periodos de 2 dias.
 #		Necesita: experiment data-inici
-#		Model: CNRM-CM5
+#		Model: IPSL-CM5A-LR
 #
 #############
 
@@ -165,7 +165,7 @@ else
 	if [[ $freq == *"6hrP"* ]];then
 		cdo -s -r -seldate,$d1,$d2 $f $scratch/crop/$v.nc
 	elif [[ $freq == *"6hrL"* ]];then
-			cdo -s -r -invertlev -seldate,$d1,$d2 $f $scratch/crop/$v.nc
+		cdo -s -r -invertlev -seldate,$d1,$d2 $f $scratch/crop/$v.nc
 	elif [[ $freq == *"mon"* ]];then
 		for m in $mx; do
 			if [ $m -gt 12 ];then
