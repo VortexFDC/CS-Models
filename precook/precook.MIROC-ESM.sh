@@ -231,17 +231,27 @@ echo "
 Transforming hybrid levels to pressure levels"
 # get ps
 px=$(ncdump -v,p0 $scratch/crop/ua.nc | tac | awk '(NR==2){print $3}')
+
+echo test 1 px=$px
 # hybrid levels
 echo "vct = " > $scratch/foo.a
 echo "0.0" >> $scratch/foo.a
-cdo1 -s -r outputf,%10.3f,2 -mulc,$px -selname,a_bnds $scratch/crop/ua.nc | awk '{print $1}' >> $scratch/foo.a
+cdo1 -s -r outputf,%10.3f,2 -mulc,$px -selname,a_bnds $scratch/crop/ua.nc > $scratch/foo
+cat $scratch/foo | awk '{print $1}' >> $scratch/foo.a
+
+echo test 2
 echo "0.0" > $scratch/foo.b
-cdo1 -s -r outputf,%10.3f,2 -selname,b_bnds $scratch/crop/ua.nc | awk '{print $2}' >> $scratch/foo.b
+cdo1 -s -r outputf,%10.3f,2 -selname,b_bnds $scratch/crop/ua.nc > $scratch/foo #esta linea se queda colgada a veces..
+cat $scratch/foo | awk '{print $2}' >> $scratch/foo.b
+
+echo test 3
 nl=$(cdo1 -s nlevel -selvar,ua $scratch/crop/ua.nc)
+
+echo test 4
 echo "zaxistype = hybrid
 size	 = $nl
 levels	= $(seq -s" " 1 $nl )
-vctsize	= $[nl*2 +2]" > $scratch/tab/zaxisinvert
+vctsize  = $[nl*2 +2]" > $scratch/tab/zaxisinvert
 cat $scratch/foo.a |tr '\n' ' ' >> $scratch/tab/zaxisinvert
 cat $scratch/foo.b |tr '\n' ' ' >> $scratch/tab/zaxisinvert
 
@@ -255,9 +265,9 @@ done
 # END --
 
 v=zg
-ncl 'fn1="'$scratch'/crop/'$v'.day.nc"' fillmissing.ncl >> $scratch/hlev/foo.ncl.log
+ncl6 'fn1="'$scratch'/crop/'$v'.day.nc"' fillmissing.ncl >> $scratch/hlev/foo.ncl.log
 
-#rm -f $scratch/crop/*.mon*.nc $scratch/crop/*.foo.nc $scratch/zinter/*.foo.nc 
+rm -f $scratch/crop/*.mon*.nc $scratch/crop/*.foo.nc $scratch/zinter/*.foo.nc 
 
 fi
 
@@ -400,7 +410,6 @@ echo "DONE ... $mdl.$s.$dtx.grb"
 rm -r $scratch
 
 fi
-
 
 done
 
