@@ -8,7 +8,7 @@
 #
 #################
 
-mdl=MIROC-ESM
+mdl=MRI-CGCM3
 ens=r1i1p1
 
 spool_path="./spool"
