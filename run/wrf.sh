@@ -21,11 +21,15 @@ idate=`echo $idate | sed 's/-//g'`
 fdate=`date +%Y%m%d -d "$idate 2 day"`
 hours=36	# 1 day simulation + 0,5 day spinup
 
-savePath=/home/martin/storage/runs/$run/wrfoutput/$mdl/$exp/$idate.$fdate/
+savePath=/home/martin/storage/runs/$run/wrfoutput/$mdl/$exp/$idate.$fdate
 ssh cloud1.vortex.es 'mkdir -p '$savePath
 # Check if run exists in storage
 wrks=`ssh cloud1.vortex.es 'ls '$savePath' | wc -l'`
-if [ $wrks -eq 111 ];then echo 'Work previously computed. Skipping...';exit;fi
+if [ $wrks -eq 111 ];then 
+	echo 'Work previously computed. Skipping...';exit
+else
+	ssh cloud1.vortex.es 'rm -f '$savePath'/*'
+fi
 
 # Find number of domains of the run
 d=`ls $path/$run.$exp/static/geo_em.d*.nc | wc -l`
