@@ -9,9 +9,9 @@
 ######################################
 
 run=acciona-mx.v3
-exp=rcp85
+exp=historical
 
-mdl=MPI-ESM-LR
+mdl=MRI-CGCM3
 
 mkdir -p /home/martin/storage/models/$mdl/wrfinput/
 
