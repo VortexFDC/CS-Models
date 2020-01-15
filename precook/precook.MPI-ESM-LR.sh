@@ -17,7 +17,7 @@ idate=$2
 if [ -z "$idate" ] || [ `echo $idate | awk -F- '{print NF}'` -ne 3 ];then echo 'Please specify start date in format YYYY-MM-DD';exit;fi
 
 d1=$idate							# Inicio SHORT
-d2=`date +%Y-%m-%d -d "$d1 0 day"`	# Final SHORT
+d2=`date +%Y-%m-%d -d "$d1 2 day"`	# Final SHORT
 dx=`date +%Y-%m-%d -d "$d1 -1 day"` # Inicio LONG
 dy=`date +%Y-%m-%d -d "$d2 1 day"`	# Final LONG
 
@@ -33,7 +33,7 @@ else
 	mx=`printf "%02d %02d %02d" $m1 $(($m1+1)) $(($m1+2))`
 fi
 
-scratch=scratch.$mdl
+scratch=scratch.$mdl.$s
 storage=/home/martin/storage/models/$mdl
 
 if [ -f $storage/wrfinput/$mdl.$s.$dtx.grb ];then echo 'Grib file '$mdl.$s.$dtx'.grb already exists';exit;fi
@@ -245,7 +245,6 @@ v=hus
 cp $scratch/crop/$v.day.nc $scratch/zinter/$v.nc
 v=zg
 cp $scratch/crop/$v.day.nc $scratch/zinter/$v.nc
-#ncl 'fn1="'$scratch'/crop/'$v'.day.nc"' fillmissing.ncl >> $scratch/hlev/foo.ncl.log # No se si cal...
 
 rm -f $scratch/crop/*.mon*.nc $scratch/crop/*.foo.nc $scratch/zinter/*.foo.nc 
 
