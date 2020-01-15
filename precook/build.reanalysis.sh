@@ -9,9 +9,9 @@
 ######################################
 
 exp=rcp85
-mdl=ACCESS1-0
+mdl=HadGEM2-ES
 
-mkdir -p /home/martin/storage/models/$mdl/wrfinput/
+mkdir -p /home/martin/storage/reanalysis/$mdl/$exp/
 
 if [ $mdl == 'HadGEM2-ES' ] || [ $mdl == 'ACCESS1-0' ];then
 	source /opt/anaconda/etc/profile.d/conda.sh
