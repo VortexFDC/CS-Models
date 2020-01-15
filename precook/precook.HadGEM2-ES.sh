@@ -35,13 +35,13 @@ fi
 
 m1=`printf "%02d" $m1`
 
-scratch=scratch.$mdl
+scratch=scratch.$mdl.$s
 storage=/home/martin/storage/models/$mdl
-save=/home/martin/storage/reanalysis/$mdl/$y1/$y1.$m1
+save=/home/martin/storage/reanalysis/$mdl/$s/$y1/$y1.$m1
 mkdir -p $save
 # Name will be: $mdl.$s.YYYYMMDDHH.grb.rar || dtx=YYYYMMDD
 
-if [ -f $save/$mdl.$s.${dtx}00.grb.rar ] || [ -f $save/$mdl.$s.${dtx}18.grb.rar ] ;then echo 'Grib file '$mdl.$s.$dtx'??.grb.rar already exists';exit;fi
+if [ -f $save/$mdl.$s.${dtx}00.grb.rar ] && [ -f $save/$mdl.$s.${dtx}06.grb.rar ] && [ -f $save/$mdl.$s.${dtx}12.grb.rar ] && [ -f $save/$mdl.$s.${dtx}18.grb.rar ] ;then echo 'Grib file '$mdl.$s.$dtx'??.grb.rar already exists';exit;fi
 
 plev="100000,97500,95000,92500,90000,87500,85000,82500,80000,77500,75000,70000,65000,60000,55000,50000,45000,40000,35000,30000"
 plev2="1000,975,950,925,900,875,850,825,800,775,750,700,650,600,550,500,450,400,350,300"
@@ -70,8 +70,8 @@ if [ -d $scratch ] ; then rm -r $scratch ; fi
 mkdir -p $scratch
 for i in crop zinter ready grb merge tab hlev;do mkdir -p $scratch/$i ; done
 # Create hh2pl scripts from template
-cat hh2pl.base.R | sed "s/XmodelX/$mdl/g" > $scratch/hh2pl.R
-cat hh2pl.base.ncl | sed "s/XmodelX/$mdl/g" > $scratch/hh2pl.ncl
+cat hh2pl.base.R | sed "s/XmodelX/$mdl\.$s/g" > $scratch/hh2pl.R
+cat hh2pl.base.ncl | sed "s/XmodelX/$mdl\.$s/g" > $scratch/hh2pl.ncl
 
 # Create ref.pressure.nc
 echo "Creating presure levels reference"
