@@ -17,11 +17,11 @@ idate=$2
 if [ -z "$idate" ] || [ `echo $idate | awk -F- '{print NF}'` -ne 3 ];then echo 'Please specify start date in format YYYY-MM-DD';exit;fi
 
 d1=$idate							# Inicio SHORT
-d2=`date +%Y-%m-%d -d "$d1 2 day"`	# Final SHORT
+d2=`date +%Y-%m-%d -d "$d1 0 day"`	# Final SHORT
 dx=`date +%Y-%m-%d -d "$d1 -1 day"` # Inicio LONG
 dy=`date +%Y-%m-%d -d "$d2 1 day"`	# Final LONG
 
-dtx=`echo $d1.$d2 | sed 's/-//g'`
+dtx=`echo $d1 | sed 's/-//g'`
 y1=`echo $dx | awk -F- '{print $1}'`
 y2=`echo $dy | awk -F- '{print $1}'`
 m1=`echo $dx | awk -F- '{print $2}' | sed 's/^0*//'`
@@ -33,10 +33,15 @@ else
 	mx=`printf "%02d %02d %02d" $m1 $(($m1+1)) $(($m1+2))`
 fi
 
+m1=`printf "%02d" $m1`
+
 scratch=scratch.$mdl.$s
 storage=/home/martin/storage/models/$mdl
+save=/home/martin/storage/reanalysis/$mdl/$s/$y1/$y1.$m1
+mkdir -p $save
+# Name will be: $mdl.$s.YYYYMMDDHH.grb.rar || dtx=YYYYMMDD
 
-if [ -f $storage/wrfinput/$mdl.$s.$dtx.grb ];then echo 'Grib file '$mdl.$s.$dtx'.grb already exists';exit;fi
+if [ -f $save/$mdl.$s.${dtx}00.grb.rar ] && [ -f $save/$mdl.$s.${dtx}06.grb.rar ] && [ -f $save/$mdl.$s.${dtx}12.grb.rar ] && [ -f $save/$mdl.$s.${dtx}18.grb.rar ] ;then echo 'Grib file '$mdl.$s.$dtx'??.grb.rar already exists';exit;fi
 
 plev="100000,97500,95000,92500,90000,87500,85000,82500,80000,77500,75000,70000,65000,60000,55000,50000,45000,40000,35000,30000,25000,22500,20000,17500,15000,12500,10000,7000,5000,3000"
 plev2="1000,975,950,925,900,875,850,825,800,775,750,700,650,600,550,500,450,400,350,300,250,225,200,175,150,125,100,70,50,30"
@@ -404,9 +409,14 @@ else
 fi
 
 cdo -s -r merge $scratch/merge/*.grb $scratch/merge/all.grb
-cdo1 -s settaxis,$d0,00:00,6hour $scratch/merge/all.grb $storage/wrfinput/$mdl.$s.$dtx.grb
+cdo1 -s settaxis,$d0,00:00,6hour $scratch/merge/all.grb $scratch/merge/$mdl.$s.$dtx.grb
 
-echo "DONE ... $mdl.$s.$dtx.grb"
+for ts in 00 06 12 18;do
+	cdo -s selhour,$ts $scratch/merge/$mdl.$s.${dtx}.grb $scratch/merge/$mdl.$s.${dtx}${ts}.grb
+	rar a -inul $save/$mdl.$s.${dtx}${ts}.grb.rar $scratch/merge/$mdl.$s.${dtx}${ts}.grb
+	echo "DONE ... $mdl.$s.${dtx}${ts}.grb.rar"
+done
+
 rm -r $scratch
 
 fi
