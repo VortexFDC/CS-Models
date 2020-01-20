@@ -65,8 +65,8 @@ if [ -d $scratch ] ; then rm -r $scratch ; fi
 mkdir -p $scratch
 for i in crop zinter ready grb merge tab hlev;do mkdir -p $scratch/$i ; done
 # Create hh2pl scripts from template
-cat hh2pl.base.R | sed "s/XmodelX/$mdl/g" > $scratch/hh2pl.R
-cat hh2pl.base.ncl | sed "s/XmodelX/$mdl/g" > $scratch/hh2pl.ncl
+cat hh2pl.base.R | sed "s/XmodelX/$mdl\.$s/g" > $scratch/hh2pl.R
+cat hh2pl.base.ncl | sed "s/XmodelX/$mdl\.$s/g" > $scratch/hh2pl.ncl
 
 # Create ref.pressure.nc
 echo "Creating presure levels reference"
