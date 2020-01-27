@@ -9,15 +9,15 @@
 
 source /home/gil/.profile.local
 
-run=acciona-mx.v3
-mdl=IPSL-CM5A-LR
+run=edp_colombia
+mdl=$1
 
 mkdir -p nc
 
 echo 'Processing WRF output for '$mdl
 for dm in d01 d02 d03;do
 
-	for scen in rcp85 ;do # rcp85 ;do
+	for scen in historical rcp85 ;do # rcp85 ;do
 		echo ' Working on '$scen $dm
 		rdir=/home/martin/storage/runs/$run/wrfoutput/$mdl/$scen/
 		
