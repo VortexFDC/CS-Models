@@ -1,3 +1,4 @@
 precook/scratch.*
 split/spool/
 *.nc
+precook/nohup.*
