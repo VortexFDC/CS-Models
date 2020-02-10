@@ -27,21 +27,34 @@ y2=`echo $dy | awk -F- '{print $1}'`
 m1=`echo $dx | awk -F- '{print $2}' | sed 's/^0*//'`
 m2=`echo $dy | awk -F- '{print $2}' | sed 's/^0*//'`
 
+d1d=`echo $d1 | awk -F- '{print $3}'`
+d1m=`echo $d1 | awk -F- '{print $2}'`
+d1y=`echo $d1 | awk -F- '{print $1}'`
+
+# Check if first/last day of month
 if [ $m1 -eq $m2 ];then 
 	mx=`printf "%02d %02d" $m1 $(($m1+1))`
-else
-	mx=`printf "%02d %02d %02d" $m1 $(($m1+1)) $(($m1+2))`
+elif [ $m1 -lt $m2 ];then
+	if [ $d1d -eq 01 ];then
+		mx=`printf "%02d %02d" $(($m1+1)) $(($m2+1))`
+	else
+		mx=`printf "%02d %02d" $m1 $m2`
+	fi
+elif [ $m1 -gt $m2 ];then
+	mx=`printf "%02d 13" $m1`	
 fi
 
-m1=`printf "%02d" $m1`
+echo $d1
+echo $dx $dy
+echo $mx
 
 scratch=scratch.$mdl.$s
 storage=/home/martin/storage/models/$mdl
-save=/home/martin/storage/reanalysis/$mdl/$s/$y1/$y1.$m1
+save=/home/martin/storage/reanalysis.v2/$mdl/$s/$d1y/$d1y.$d1m
 mkdir -p $save
 # Name will be: $mdl.$s.YYYYMMDDHH.grb.rar || dtx=YYYYMMDD
 
-if [ -f $save/$mdl.$s.${dtx}00.grb.rar ] && [ -f $save/$mdl.$s.${dtx}06.grb.rar ] && [ -f $save/$mdl.$s.${dtx}12.grb.rar ] && [ -f $save/$mdl.$s.${dtx}18.grb.rar ] ;then echo 'Grib file '$mdl.$s.$dtx'??.grb.rar already exists';exit;fi
+#if [ -f $save/$mdl.$s.${dtx}00.grb.rar ] && [ -f $save/$mdl.$s.${dtx}06.grb.rar ] && [ -f $save/$mdl.$s.${dtx}12.grb.rar ] && [ -f $save/$mdl.$s.${dtx}18.grb.rar ] ;then echo 'Grib file '$mdl.$s.$dtx'??.grb.rar already exists';exit;fi
 
 plev="100000,97500,95000,92500,90000,87500,85000,82500,80000,77500,75000,70000,65000,60000,55000,50000,45000,40000,35000,30000"
 plev2="1000,975,950,925,900,875,850,825,800,775,750,700,650,600,550,500,450,400,350,300"
@@ -155,7 +168,7 @@ if [ $v == ta ] || [ $v == ua ] || [ $v == va ];then
 					cdo -s -r setday,1 -settime,00:00 -selmon,$m $f $scratch/crop/$v.mon$m.nc
 				fi
 			done
-			rm -f $scratch/crop/$v.day.foo.nc
+			rm -f $scratch/crop/$v.foo.nc
 			cdo -s -r cat $scratch/crop/$v.mon*.nc $scratch/crop/$v.foo.nc
 			cdo -s -r selvar,$v -seldate,$d1,$d2 -inttime,$d1,00:00,6hour $scratch/crop/$v.foo.nc $scratch/crop/$v.day.nc
 		else
