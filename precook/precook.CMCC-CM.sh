@@ -27,17 +27,30 @@ y2=`echo $dy | awk -F- '{print $1}'`
 m1=`echo $dx | awk -F- '{print $2}' | sed 's/^0*//'`
 m2=`echo $dy | awk -F- '{print $2}' | sed 's/^0*//'`
 
-if [ $m1 -eq $m2 ];then 
-	mx=`printf "%02d %02d" $m1 $(($m1+1))`
-else
-	mx=`printf "%02d %02d %02d" $m1 $(($m1+1)) $(($m1+2))`
-fi
+d1d=`echo $d1 | awk -F- '{print $3}'`
+d1m=`echo $d1 | awk -F- '{print $2}'`
+d1y=`echo $d1 | awk -F- '{print $1}'`
 
-m1=`printf "%02d" $m1`
+# Check if first/last day of month
+if [ $m1 -eq $m2 ];then
+	mx=`printf "%02d %02d" $m1 $(($m1+1))`
+elif [ $m1 -lt $m2 ];then # Changing month
+	if [ $d1d -eq 01 ];then
+		mx=`printf "%02d %02d" $(($m1+1)) $(($m2+1))`
+	else
+		mx=`printf "%02d %02d" $m1 $m2`
+	fi
+elif [ $m1 -gt $m2 ];then # Changing year
+	if [ $d1m -eq 01 ];then
+		mx=`printf "01 02"`
+	else
+		mx=`printf "%02d 13" $m1`
+	fi
+fi
 
 scratch=scratch.$mdl.$s
 storage=/home/martin/storage/models/$mdl
-save=/home/martin/storage/reanalysis/$mdl/$s/$y1/$y1.$m1
+save=/home/martin/storage/reanalysis/$mdl/$s/$d1y/$d1y.$d1m
 mkdir -p $save
 # Name will be: $mdl.$s.YYYYMMDDHH.grb.rar || dtx=YYYYMMDD
 
@@ -79,10 +92,19 @@ for v in huss psl ps tas uas vas tos $tslsi ; do
 f=`ls $storage/files/${v}_*_${mdl}_${s}_${ens}_$y1.nc`
 freq=`echo $f | awk -F_ '{print $2}'`
 
-if [ $(($y1+1)) -eq $y2 ] && [[ $freq != *"mon"* ]];then
-	cdo -s cat $storage/files/${v}_${freq}_${mdl}_${s}_${ens}_$y1.nc $storage/files/${v}_${freq}_${mdl}_${s}_${ens}_$y2.nc $scratch/crop/$v.cat.nc
-	f=$scratch/crop/$v.cat.nc
-fi
+	# Join files from the two years
+	if [ $(($y1+1)) -eq $y2 ] ;then
+		if [[ $freq == *"mon"* ]];then
+			cdo -s cat $storage/files/${v}_${freq}_${mdl}_${s}_${ens}_$y1.nc $storage/files/${v}_${freq}_${mdl}_${s}_${ens}_$y2.nc $scratch/crop/${v}_${freq}.cat.nc
+			f=$scratch/crop/${v}_${freq}.cat.nc
+		else
+			cdo -s selmon,12 $storage/files/${v}_${freq}_${mdl}_${s}_${ens}_$y1.nc $scratch/crop/${v}.y1.nc
+			cdo -s selmon,01 $storage/files/${v}_${freq}_${mdl}_${s}_${ens}_$y2.nc $scratch/crop/${v}.y2.nc
+			rm -f $scratch/crop/${v}_${freq}.cat.nc
+			cdo -s cat $scratch/crop/${v}.y?.nc $scratch/crop/${v}_${freq}.cat.nc
+			f=$scratch/crop/${v}_${freq}.cat.nc
+		fi
+	fi
 
 echo 'select ... '$v $freq
 if [ $v == tos ];then
@@ -123,11 +145,19 @@ if [ $v == ta ] || [ $v == ua ] || [ $v == va ];then
 	for freq in `ls $storage/files/${v}_*_${mdl}_${s}_${ens}_$y1.nc | awk -F_ '{print $2}'`; do
 		echo 'select ... '$v $freq
 		f=$storage/files/${v}_${freq}_${mdl}_${s}_${ens}_$y1.nc
-	
-		if [ $(($y1+1)) -eq $y2 ] && [[ $freq != *"mon"* ]];then
-			rm -f $scratch/crop/$v.cat.nc
-			cdo -s cat $storage/files/${v}_${freq}_${mdl}_${s}_${ens}_$y1.nc $storage/files/${v}_${freq}_${mdl}_${s}_${ens}_$y2.nc $scratch/crop/$v.cat.nc
-			f=$scratch/crop/$v.cat.nc
+
+		# Join files from the two years
+		if [ $(($y1+1)) -eq $y2 ] ;then
+			if [[ $freq == *"mon"* ]];then
+			 	cdo -s cat $storage/files/${v}_${freq}_${mdl}_${s}_${ens}_$y1.nc $storage/files/${v}_${freq}_${mdl}_${s}_${ens}_$y2.nc $scratch/crop/${v}_${freq}.cat.nc
+				f=$scratch/crop/${v}_${freq}.cat.nc
+			else
+				cdo -s selmon,12 $storage/files/${v}_${freq}_${mdl}_${s}_${ens}_$y1.nc $scratch/crop/${v}.y1.nc
+				cdo -s selmon,01 $storage/files/${v}_${freq}_${mdl}_${s}_${ens}_$y2.nc $scratch/crop/${v}.y2.nc
+				rm -f $scratch/crop/${v}_${freq}.cat.nc
+				cdo -s cat $scratch/crop/${v}.y?.nc $scratch/crop/${v}_${freq}.cat.nc
+				f=$scratch/crop/${v}_${freq}.cat.nc
+			fi
 		fi
 
 		if [[ $freq == *"6hrP"* ]];then
@@ -146,7 +176,7 @@ if [ $v == ta ] || [ $v == ua ] || [ $v == va ];then
 					cdo -s -r setday,1 -settime,00:00 -selmon,$m $f $scratch/crop/$v.mon$m.nc
 				fi
 			done
-			rm -f $scratch/crop/$v.day.foo.nc
+			rm -f $scratch/crop/$v.foo.nc
 			cdo -s -r cat $scratch/crop/$v.mon*.nc $scratch/crop/$v.foo.nc
 			cdo -s -r -seldate,$d1,$d2 -inttime,$d1,00:00,6hour $scratch/crop/$v.foo.nc $scratch/crop/$v.day.nc
 		else
@@ -159,9 +189,18 @@ else
 	freq=`echo $f | awk -F_ '{print $2}'`
 	echo 'select ... '$v $freq
 
-	if [ $(($y1+1)) -eq $y2 ] && [[ $freq != *"mon"* ]];then
-			cdo -s cat $storage/files/${v}_${freq}_${mdl}_${s}_${ens}_$y1.nc $storage/files/${v}_${freq}_${mdl}_${s}_${ens}_$y2.nc $scratch/crop/$v.cat.nc
-			f=$scratch/crop/$v.cat.nc
+	# Join files from the two years
+	if [ $(($y1+1)) -eq $y2 ] ;then
+		if [[ $freq == *"mon"* ]];then
+			cdo -s cat $storage/files/${v}_${freq}_${mdl}_${s}_${ens}_$y1.nc $storage/files/${v}_${freq}_${mdl}_${s}_${ens}_$y2.nc $scratch/crop/${v}_${freq}.cat.nc
+			f=$scratch/crop/${v}_${freq}.cat.nc
+		else
+			cdo -s selmon,12 $storage/files/${v}_${freq}_${mdl}_${s}_${ens}_$y1.nc $scratch/crop/${v}.y1.nc
+			cdo -s selmon,01 $storage/files/${v}_${freq}_${mdl}_${s}_${ens}_$y2.nc $scratch/crop/${v}.y2.nc
+			rm -f $scratch/crop/${v}_${freq}.cat.nc
+			cdo -s cat $scratch/crop/${v}.y?.nc $scratch/crop/${v}_${freq}.cat.nc
+			f=$scratch/crop/${v}_${freq}.cat.nc
+		fi
 	fi
 
 	if [[ $freq == *"6hr"* ]];then
@@ -200,9 +239,18 @@ for v in mrlsl tsl ; do
 	freq=`echo $f | awk -F_ '{print $2}'`
 	echo 'select ... '$v $freq
 
-	if [ $(($y1+1)) -eq $y2 ] && [[ $freq != *"mon"* ]];then
-		cdo -s cat $storage/files/${v}_${freq}_${mdl}_${s}_${ens}_$y1.nc $storage/files/${v}_${freq}_${mdl}_${s}_${ens}_$y2.nc $scratch/crop/$v.cat.nc
-		f=$scratch/crop/$v.cat.nc
+	# Join files from the two years
+	if [ $(($y1+1)) -eq $y2 ] ;then
+		if [[ $freq == *"mon"* ]];then
+			cdo -s cat $storage/files/${v}_${freq}_${mdl}_${s}_${ens}_$y1.nc $storage/files/${v}_${freq}_${mdl}_${s}_${ens}_$y2.nc $scratch/crop/${v}_${freq}.cat.nc
+			f=$scratch/crop/${v}_${freq}.cat.nc
+		else
+			cdo -s selmon,12 $storage/files/${v}_${freq}_${mdl}_${s}_${ens}_$y1.nc $scratch/crop/${v}.y1.nc
+			cdo -s selmon,01 $storage/files/${v}_${freq}_${mdl}_${s}_${ens}_$y2.nc $scratch/crop/${v}.y2.nc
+			rm -f $scratch/crop/${v}_${freq}.cat.nc
+			cdo -s cat $scratch/crop/${v}.y?.nc $scratch/crop/${v}_${freq}.cat.nc
+			f=$scratch/crop/${v}_${freq}.cat.nc
+		fi
 	fi
 
 	if [[ $freq == *"6hr"* ]];then
