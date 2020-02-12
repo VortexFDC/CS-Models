@@ -5,11 +5,12 @@
 #	Executes precook for all days abailable for the given model (based on days.$run.$exp.lst) for the selected model and experiment (and run)
 #	Special case for HadGEM2-ES in dates
 #	Spercial for HadGEM2-ES ACCESS1-0 in R enviroment
+#		Launch as: nohup ./build.reanalysis.historical.sh > nohup.historical.out 2>&1 &
 #
 ######################################
 
 exp=historical
-mdl=CMCC-CM
+mdl=ACCESS1-0
 
 mkdir -p /home/martin/storage/reanalysis/$mdl/$exp/
 
@@ -18,19 +19,14 @@ if [ $mdl == 'HadGEM2-ES' ] || [ $mdl == 'ACCESS1-0' ];then
 	conda activate Rclassic
 fi
 
-if [ $exp == historical ];then
-	syear=1981
-	eyear=2005
-else
-	syear=`cat ../model-period.dict | grep $mdl | awk '{print substr($NF,1,4)}'`
-	eyear=`cat ../model-period.dict | grep $mdl | awk '{print substr($NF,6,4)}'`
-fi
+syear=1981
+eyear=2005
 
 
-for date in `cat ../days.full.$exp.lst`;do
+for date in `cat ../days.real.full.$exp.lst`;do
 	
 	if [ `echo $date | sed 's/-//g'` -lt ${syear}0102 ];then continue;fi
-	if [ `echo $date | sed 's/-//g'` -gt ${eyear}1227 ];then break;fi
+	if [ `echo $date | sed 's/-//g'` -gt ${eyear}1230 ];then break;fi
 	if [ $mdl == HadGEM2-ES ] && [ $exp == historical ] && [ `echo $date | sed 's/-//g'` -gt ${eyear}1127 ];then break;fi
 
 
@@ -39,10 +35,11 @@ for date in `cat ../days.full.$exp.lst`;do
 	m1=`echo $date | awk -F- '{print $2}' | sed 's/^0*//'`
 	m1=`printf "%02d" $m1`
 	save=/home/martin/storage/reanalysis/$mdl/$exp/$y1/$y1.$m1
+
 	if [ -f $save/$mdl.$exp.${dtx}00.grb.rar ] && [ -f $save/$mdl.$exp.${dtx}06.grb.rar ] && [ -f $save/$mdl.$exp.${dtx}12.grb.rar ] && [ -f $save/$mdl.$exp.${dtx}18.grb.rar ] ;then echo 'Grib file '$mdl.$exp.$dtx'??.grb.rar already exists';continue ;fi
 
 	# System to relaunch precook if stuck
-	maxloop=25
+	maxloop=75
 	for i in `seq 3`;do
 		echo Launch precook num $i
 		./precook.$mdl.sh $exp $date &
